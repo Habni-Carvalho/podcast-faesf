@@ -43,6 +43,19 @@
       border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
+    .filtro {
+      margin-bottom: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    select {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
     .episodio {
       background: white;
       margin-bottom: 25px;
@@ -106,6 +119,13 @@
       <p>Este canal é voltado aos colaboradores, professores, coordenadores e equipe técnica da FAESF. Aqui, compartilhamos conteúdos que fortalecem a identidade institucional, a formação continuada e a comunicação estratégica.</p>
     </div>
 
+    <div class="filtro">
+      <label for="filtro-temporada">Filtrar por temporada/tema:</label>
+      <select id="filtro-temporada" onchange="filtrarEpisodios()">
+        <option value="todos">Mostrar todos</option>
+      </select>
+    </div>
+
     <div id="episodios"></div>
   </div>
 
@@ -121,15 +141,39 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    let todosEpisodios = [];
 
     async function carregarEpisodios() {
       const container = document.getElementById("episodios");
+      const seletor = document.getElementById("filtro-temporada");
       container.innerHTML = "";
+      seletor.innerHTML = '<option value="todos">Mostrar todos</option>';
+      todosEpisodios = [];
 
       const querySnapshot = await db.collection("episodios").orderBy("data", "desc").get();
+      const temporadasSet = new Set();
 
       querySnapshot.forEach((doc) => {
         const ep = doc.data();
+        todosEpisodios.push(ep);
+        if (ep.temporada) temporadasSet.add(ep.temporada);
+      });
+
+      [...temporadasSet].sort().forEach(temp => {
+        const option = document.createElement("option");
+        option.value = temp;
+        option.textContent = temp;
+        seletor.appendChild(option);
+      });
+
+      exibirEpisodios(todosEpisodios);
+    }
+
+    function exibirEpisodios(lista) {
+      const container = document.getElementById("episodios");
+      container.innerHTML = "";
+
+      lista.forEach((ep) => {
         const div = document.createElement("div");
         div.className = "episodio";
         div.innerHTML = `
@@ -144,6 +188,16 @@
         `;
         container.appendChild(div);
       });
+    }
+
+    function filtrarEpisodios() {
+      const filtro = document.getElementById("filtro-temporada").value;
+      if (filtro === "todos") {
+        exibirEpisodios(todosEpisodios);
+      } else {
+        const filtrados = todosEpisodios.filter(ep => ep.temporada === filtro);
+        exibirEpisodios(filtrados);
+      }
     }
 
     window.onload = carregarEpisodios;
