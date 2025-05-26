@@ -82,7 +82,7 @@
       font-weight: 600;
       margin-bottom: 5px;
     }
-    .episodio .data, .episodio .temporada {
+    .episodio .data, .episodio .tag {
       font-size: 13px;
       color: #888;
       margin-bottom: 8px;
@@ -120,8 +120,8 @@
     </div>
 
     <div class="filtro">
-      <label for="filtro-temporada">Filtrar por temporada/tema:</label>
-      <select id="filtro-temporada" onchange="filtrarEpisodios()">
+      <label for="filtro-tag">Filtrar por tag (playlist):</label>
+      <select id="filtro-tag" onchange="filtrarEpisodios()">
         <option value="todos">Mostrar todos</option>
       </select>
     </div>
@@ -145,24 +145,24 @@
 
     async function carregarEpisodios() {
       const container = document.getElementById("episodios");
-      const seletor = document.getElementById("filtro-temporada");
+      const seletor = document.getElementById("filtro-tag");
       container.innerHTML = "";
       seletor.innerHTML = '<option value="todos">Mostrar todos</option>';
       todosEpisodios = [];
 
       const querySnapshot = await db.collection("episodios").orderBy("data", "desc").get();
-      const temporadasSet = new Set();
+      const tagsSet = new Set();
 
       querySnapshot.forEach((doc) => {
         const ep = doc.data();
         todosEpisodios.push(ep);
-        if (ep.temporada) temporadasSet.add(ep.temporada);
+        if (ep.tag) tagsSet.add(ep.tag);
       });
 
-      [...temporadasSet].sort().forEach(temp => {
+      [...tagsSet].sort().forEach(tag => {
         const option = document.createElement("option");
-        option.value = temp;
-        option.textContent = temp;
+        option.value = tag;
+        option.textContent = tag;
         seletor.appendChild(option);
       });
 
@@ -181,7 +181,7 @@
           <div class="info">
             <div class="titulo">${ep.titulo}</div>
             <div class="data">Data: ${ep.data}</div>
-            <div class="temporada">Temporada: ${ep.temporada}</div>
+            <div class="tag">Playlist: ${ep.tag}</div>
             <p>${ep.descricao}</p>
             <audio controls src="${ep.audio}"></audio>
           </div>
@@ -191,11 +191,11 @@
     }
 
     function filtrarEpisodios() {
-      const filtro = document.getElementById("filtro-temporada").value;
+      const filtro = document.getElementById("filtro-tag").value;
       if (filtro === "todos") {
         exibirEpisodios(todosEpisodios);
       } else {
-        const filtrados = todosEpisodios.filter(ep => ep.temporada === filtro);
+        const filtrados = todosEpisodios.filter(ep => ep.tag === filtro);
         exibirEpisodios(filtrados);
       }
     }
