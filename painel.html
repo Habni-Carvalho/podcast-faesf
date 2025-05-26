@@ -81,7 +81,7 @@
     <input type="text" id="titulo" placeholder="Título do episódio">
     <textarea id="descricao" placeholder="Descrição do episódio"></textarea>
     <input type="date" id="data">
-    <input type="text" id="temporada" placeholder="Temporada ou tema">
+    <input type="text" id="tag" placeholder="Tag ou categoria (ex: Regimento Geral FAESF)">
     <input type="text" id="imagem" placeholder="Link da imagem de capa (.jpg ou .png)">
     <input type="text" id="audio" placeholder="Link do arquivo .mp3">
     <button onclick="salvarEpisodio()">Salvar</button>
@@ -114,7 +114,7 @@
       document.getElementById("titulo").value = dados?.titulo || "";
       document.getElementById("descricao").value = dados?.descricao || "";
       document.getElementById("data").value = dados?.data || "";
-      document.getElementById("temporada").value = dados?.temporada || "";
+      document.getElementById("tag").value = dados?.tag || "";
       document.getElementById("imagem").value = dados?.imagem || "";
       document.getElementById("audio").value = dados?.audio || "";
     }
@@ -123,16 +123,16 @@
       const titulo = document.getElementById("titulo").value.trim();
       const descricao = document.getElementById("descricao").value.trim();
       const data = document.getElementById("data").value;
-      const temporada = document.getElementById("temporada").value.trim();
+      const tag = document.getElementById("tag").value.trim();
       const imagem = document.getElementById("imagem").value.trim();
       const audio = document.getElementById("audio").value.trim();
 
-      if (!titulo || !descricao || !data || !imagem || !audio || !temporada) {
+      if (!titulo || !descricao || !data || !imagem || !audio || !tag) {
         alert("Preencha todos os campos.");
         return;
       }
 
-      const episodio = { titulo, descricao, data, imagem, audio, temporada };
+      const episodio = { titulo, descricao, data, imagem, audio, tag };
 
       if (modoEdicao && idEdicao) {
         db.collection("episodios").doc(idEdicao).set(episodio).then(() => {
@@ -151,7 +151,7 @@
       document.getElementById("titulo").value = "";
       document.getElementById("descricao").value = "";
       document.getElementById("data").value = "";
-      document.getElementById("temporada").value = "";
+      document.getElementById("tag").value = "";
       document.getElementById("imagem").value = "";
       document.getElementById("audio").value = "";
       document.getElementById("formulario").style.display = "none";
@@ -172,7 +172,7 @@
               <img src="${ep.imagem}" alt="Imagem do episódio">
               <div class="conteudo">
                 <div class="titulo">${ep.titulo}</div>
-                <div class="data">📅 ${ep.data} | 🎧 ${ep.temporada}</div>
+                <div class="data">📅 ${ep.data} | 🏷️ ${ep.tag}</div>
                 <div class="descricao">${ep.descricao}</div>
                 <audio controls src="${ep.audio}"></audio>
                 <button onclick='mostrarFormulario(${JSON.stringify(ep)}, "${doc.id}")'>✏️ Editar</button>
