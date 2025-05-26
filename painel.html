@@ -37,9 +37,26 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
+    .episodio img {
+      max-width: 100%;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+
     .titulo {
       font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .descricao {
       margin-bottom: 10px;
+      color: #555;
+    }
+
+    .data {
+      font-size: 14px;
+      color: #888;
     }
 
     .acoes {
@@ -74,7 +91,7 @@
       display: none;
     }
 
-    input {
+    input, textarea {
       width: 100%;
       padding: 10px;
       margin-bottom: 12px;
@@ -100,6 +117,9 @@
   <div class="formulario" id="formulario">
     <h2>Novo Episódio</h2>
     <input type="text" id="titulo" placeholder="Título do episódio">
+    <textarea id="descricao" placeholder="Descrição"></textarea>
+    <input type="date" id="data">
+    <input type="text" id="imagem" placeholder="Link da imagem de capa (.jpg ou .png)">
     <input type="text" id="audio" placeholder="Link do arquivo .mp3">
     <button onclick="salvarEpisodio()">Salvar</button>
   </div>
@@ -115,18 +135,24 @@
 
     function salvarEpisodio() {
       const titulo = document.getElementById("titulo").value.trim();
+      const descricao = document.getElementById("descricao").value.trim();
+      const data = document.getElementById("data").value;
+      const imagem = document.getElementById("imagem").value.trim();
       const audio = document.getElementById("audio").value.trim();
 
-      if (!titulo || !audio) {
+      if (!titulo || !descricao || !data || !imagem || !audio) {
         alert("Preencha todos os campos.");
         return;
       }
 
-      episodios.push({ titulo, audio });
+      episodios.push({ titulo, descricao, data, imagem, audio });
       atualizarLista();
 
       // Limpa o formulário
       document.getElementById("titulo").value = "";
+      document.getElementById("descricao").value = "";
+      document.getElementById("data").value = "";
+      document.getElementById("imagem").value = "";
       document.getElementById("audio").value = "";
       document.getElementById("formulario").style.display = "none";
     }
@@ -139,10 +165,13 @@
         const div = document.createElement("div");
         div.className = "episodio";
         div.innerHTML = `
+          <img src="${ep.imagem}" alt="Imagem do episódio">
           <div class="titulo">${ep.titulo}</div>
+          <div class="data">📅 ${ep.data}</div>
+          <div class="descricao">${ep.descricao}</div>
           <audio controls src="${ep.audio}"></audio>
           <div class="acoes">
-            <button onclick="alert('Editar em breve')">✏️ Editar</button>
+            <button onclick="alert('Função editar em breve')">✏️ Editar</button>
             <button onclick="removerEpisodio(${index})">🗑️ Excluir</button>
           </div>
         `;
