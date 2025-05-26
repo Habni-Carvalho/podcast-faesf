@@ -131,12 +131,11 @@
       db.collection("episodios").add(episodio).then(() => {
         carregarEpisodios();
         document.getElementById("titulo").value = "";
-document.getElementById("descricao").value = "";
-document.getElementById("data").value = "";
-document.getElementById("imagem").value = "";
-document.getElementById("audio").value = "";
-document.getElementById("formulario").style.display = "none";
-
+        document.getElementById("descricao").value = "";
+        document.getElementById("data").value = "";
+        document.getElementById("imagem").value = "";
+        document.getElementById("audio").value = "";
+        document.getElementById("formulario").style.display = "none";
       });
     }
 
