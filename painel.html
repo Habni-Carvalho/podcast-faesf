@@ -5,7 +5,7 @@
   <title>Painel | Podcast FAESF</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Firebase SDKs -->
+  <!-- Firebase compatível com GitHub Pages -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
@@ -16,28 +16,33 @@
       background-color: #f4f4f4;
       padding: 20px;
     }
+
     header {
       background-color: #001f36;
       color: white;
       padding: 20px;
       text-align: center;
     }
+
     .episodio-flex {
       display: flex;
       gap: 20px;
       align-items: flex-start;
       flex-wrap: wrap;
     }
+
     .episodio-flex img {
       width: 180px;
       height: 180px;
       object-fit: cover;
       border-radius: 5px;
     }
+
     .conteudo {
       flex: 1;
       min-width: 200px;
     }
+
     .formulario input, .formulario textarea {
       width: 100%;
       padding: 10px;
@@ -45,6 +50,7 @@
       border: 1px solid #ccc;
       border-radius: 5px;
     }
+
     .episodio {
       background: white;
       padding: 20px;
@@ -52,9 +58,11 @@
       margin-top: 20px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
+
     .novo {
       margin-top: 20px;
     }
+
     button {
       background-color: #2e86de;
       color: white;
@@ -63,6 +71,7 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     button:hover {
       background-color: #1e5fad;
     }
@@ -77,7 +86,7 @@
     <button onclick="mostrarFormulario()">➕ Novo Episódio</button>
   </div>
 
-  <div class="formulario" id="formulario">
+  <div class="formulario" id="formulario" style="display:none;">
     <h2>Novo Episódio</h2>
     <input type="text" id="titulo" placeholder="Título do episódio">
     <textarea id="descricao" placeholder="Descrição do episódio"></textarea>
@@ -121,11 +130,7 @@
       const episodio = { titulo, descricao, data, imagem, audio };
       db.collection("episodios").add(episodio).then(() => {
         carregarEpisodios();
-        document.getElementById("titulo").value = "";
-        document.getElementById("descricao").value = "";
-        document.getElementById("data").value = "";
-        document.getElementById("imagem").value = "";
-        document.getElementById("audio").value = "";
+        document.getElementById("formulario").reset();
         document.getElementById("formulario").style.display = "none";
       });
     }
