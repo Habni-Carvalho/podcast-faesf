@@ -7,23 +7,32 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f9f9f9;
       margin: 0;
       padding: 0;
+      color: #333;
     }
     header {
       background-color: #001f36;
       color: white;
-      padding: 30px 20px;
+      padding: 40px 20px;
       text-align: center;
     }
     header h1 {
       margin: 0;
+      font-size: 28px;
+    }
+    header p {
+      margin-top: 10px;
+      font-weight: 300;
     }
     .container {
-      max-width: 1000px;
+      max-width: 900px;
       margin: auto;
       padding: 20px;
     }
@@ -31,49 +40,70 @@
       margin-bottom: 30px;
       background: white;
       padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
     .episodio {
       background: white;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      align-items: flex-start;
     }
     .episodio img {
-      width: 100%;
-      max-height: 300px;
+      width: 160px;
+      height: 160px;
       object-fit: cover;
-      border-radius: 5px;
-      margin-bottom: 15px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .episodio .info {
+      flex: 1;
     }
     .episodio .titulo {
-      font-size: 20px;
-      font-weight: bold;
+      font-size: 18px;
+      font-weight: 600;
       margin-bottom: 5px;
     }
     .episodio .data, .episodio .temporada {
-      font-size: 14px;
-      color: #666;
+      font-size: 13px;
+      color: #888;
       margin-bottom: 8px;
+    }
+    .episodio p {
+      margin: 10px 0;
+      font-size: 15px;
     }
     audio {
       width: 100%;
       margin-top: 10px;
+    }
+    @media (max-width: 600px) {
+      .episodio {
+        flex-direction: column;
+        align-items: center;
+      }
+      .episodio img {
+        width: 100%;
+        height: auto;
+      }
     }
   </style>
 </head>
 <body>
   <header>
     <h1>🎧 Drops de Conhecimento</h1>
-    <p>Uma produção FAESF para quem deseja compreender, refletir e se desenvolver.</p>
+    <p>Uma produção interna da FAESF para formação e alinhamento institucional.</p>
   </header>
 
   <div class="container">
     <div class="descricao-site">
-      <h2>Bem-vindo ao nosso podcast</h2>
-      <p>Aqui você encontra episódios organizados por temas e temporadas, abordando assuntos da educação, formação docente, estrutura institucional e muito mais.</p>
+      <h2>Sobre o podcast</h2>
+      <p>Este canal é voltado aos colaboradores, professores, coordenadores e equipe técnica da FAESF. Aqui, compartilhamos conteúdos que fortalecem a identidade institucional, a formação continuada e a comunicação estratégica.</p>
     </div>
 
     <div id="episodios"></div>
@@ -104,11 +134,13 @@
         div.className = "episodio";
         div.innerHTML = `
           <img src="${ep.imagem}" alt="Imagem do episódio">
-          <div class="titulo">${ep.titulo}</div>
-          <div class="data">Data: ${ep.data}</div>
-          <div class="temporada">Temporada: ${ep.temporada}</div>
-          <p>${ep.descricao}</p>
-          <audio controls src="${ep.audio}"></audio>
+          <div class="info">
+            <div class="titulo">${ep.titulo}</div>
+            <div class="data">Data: ${ep.data}</div>
+            <div class="temporada">Temporada: ${ep.temporada}</div>
+            <p>${ep.descricao}</p>
+            <audio controls src="${ep.audio}"></audio>
+          </div>
         `;
         container.appendChild(div);
       });
