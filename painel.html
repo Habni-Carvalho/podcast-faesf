@@ -65,6 +65,23 @@
       margin-top: 10px;
     }
 
+    .formulario {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      display: none;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
     .novo {
       margin-top: 20px;
     }
@@ -77,40 +94,68 @@
   </header>
 
   <div class="novo">
-    <button onclick="alert('Cadastro ainda não implementado')">➕ Novo Episódio</button>
+    <button onclick="mostrarFormulario()">➕ Novo Episódio</button>
   </div>
 
-  <div class="episodios" id="lista-episodios">
-    <!-- Episódios serão inseridos aqui via JavaScript -->
+  <div class="formulario" id="formulario">
+    <h2>Novo Episódio</h2>
+    <input type="text" id="titulo" placeholder="Título do episódio">
+    <input type="text" id="audio" placeholder="Link do arquivo .mp3">
+    <button onclick="salvarEpisodio()">Salvar</button>
   </div>
+
+  <div class="episodios" id="lista-episodios"></div>
 
   <script>
-    const episodios = [
-      {
-        titulo: "Ep. 01 – Como funciona a FAESF por dentro",
-        audio: "ep01.mp3"
-      },
-      {
-        titulo: "Ep. 02 – Conhecendo a missão institucional",
-        audio: "ep02.mp3"
+    let episodios = [];
+
+    function mostrarFormulario() {
+      document.getElementById("formulario").style.display = "block";
+    }
+
+    function salvarEpisodio() {
+      const titulo = document.getElementById("titulo").value.trim();
+      const audio = document.getElementById("audio").value.trim();
+
+      if (!titulo || !audio) {
+        alert("Preencha todos os campos.");
+        return;
       }
-    ];
 
-    const lista = document.getElementById("lista-episodios");
+      episodios.push({ titulo, audio });
+      atualizarLista();
 
-    episodios.forEach((ep, index) => {
-      const div = document.createElement("div");
-      div.className = "episodio";
-      div.innerHTML = `
-        <div class="titulo">${ep.titulo}</div>
-        <audio controls src="${ep.audio}"></audio>
-        <div class="acoes">
-          <button onclick="alert('Função editar em breve')">✏️ Editar</button>
-          <button onclick="alert('Função excluir em breve')">🗑️ Excluir</button>
-        </div>
-      `;
-      lista.appendChild(div);
-    });
+      // Limpa o formulário
+      document.getElementById("titulo").value = "";
+      document.getElementById("audio").value = "";
+      document.getElementById("formulario").style.display = "none";
+    }
+
+    function atualizarLista() {
+      const lista = document.getElementById("lista-episodios");
+      lista.innerHTML = "";
+
+      episodios.forEach((ep, index) => {
+        const div = document.createElement("div");
+        div.className = "episodio";
+        div.innerHTML = `
+          <div class="titulo">${ep.titulo}</div>
+          <audio controls src="${ep.audio}"></audio>
+          <div class="acoes">
+            <button onclick="alert('Editar em breve')">✏️ Editar</button>
+            <button onclick="removerEpisodio(${index})">🗑️ Excluir</button>
+          </div>
+        `;
+        lista.appendChild(div);
+      });
+    }
+
+    function removerEpisodio(index) {
+      if (confirm("Deseja realmente excluir este episódio?")) {
+        episodios.splice(index, 1);
+        atualizarLista();
+      }
+    }
   </script>
 
 </body>
