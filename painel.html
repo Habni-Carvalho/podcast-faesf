@@ -130,8 +130,13 @@
       const episodio = { titulo, descricao, data, imagem, audio };
       db.collection("episodios").add(episodio).then(() => {
         carregarEpisodios();
-        document.getElementById("formulario").reset();
-        document.getElementById("formulario").style.display = "none";
+        document.getElementById("titulo").value = "";
+document.getElementById("descricao").value = "";
+document.getElementById("data").value = "";
+document.getElementById("imagem").value = "";
+document.getElementById("audio").value = "";
+document.getElementById("formulario").style.display = "none";
+
       });
     }
 
