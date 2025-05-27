@@ -8,16 +8,64 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: "Segoe UI", sans-serif;
       margin: 0;
-      background-color: #f4f4f4;
-      padding: 20px;
+      padding: 0;
+      background-color: #f4f6f9;
+      color: #333;
     }
     header {
       background-color: #001f36;
       color: white;
-      padding: 20px;
+      padding: 30px;
       text-align: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      padding: 30px;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    .formulario input,
+    .formulario textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .btn {
+      background-color: #001f36;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn:hover {
+      background-color: #003354;
+    }
+    .episodio {
+      background: #fff;
+      border: 1px solid #e1e1e1;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    }
+    .episodio img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-right: 20px;
     }
     .episodio-flex {
       display: flex;
@@ -25,43 +73,38 @@
       align-items: flex-start;
       flex-wrap: wrap;
     }
-    .episodio-flex img {
-      width: 180px;
-      height: 180px;
-      object-fit: cover;
-      border-radius: 5px;
-    }
     .conteudo {
       flex: 1;
-      min-width: 200px;
     }
-    .formulario input, .formulario textarea {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 12px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+    .conteudo .titulo {
+      font-size: 18px;
+      font-weight: bold;
     }
-    .episodio {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    .conteudo .data {
+      font-size: 13px;
+      color: #777;
+      margin-top: 5px;
     }
-    .novo {
-      margin-top: 20px;
+    .conteudo .descricao {
+      margin: 10px 0;
     }
-    button {
-      background-color: #2e86de;
-      color: white;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+    .topo-acoes {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
     }
-    button:hover {
-      background-color: #1e5fad;
+    .topo-acoes button {
+      font-size: 14px;
+    }
+    @media (max-width: 600px) {
+      .episodio-flex {
+        flex-direction: column;
+        align-items: center;
+      }
+      .episodio img {
+        margin: 0 auto;
+      }
     }
   </style>
 </head>
@@ -69,24 +112,22 @@
   <header>
     <h1>Painel de Episódios</h1>
   </header>
-
-  <div class="novo">
-    <button onclick="mostrarFormulario()">➕ Novo Episódio</button>
+  <div class="container">
+    <div class="topo-acoes">
+      <h2>Gerenciar episódios</h2>
+      <button class="btn" onclick="mostrarFormulario()">+ Novo Episódio</button>
+    </div>
+    <div class="formulario" id="formulario" style="display: none;">
+      <input type="text" id="titulo" placeholder="Título do episódio">
+      <textarea id="descricao" placeholder="Descrição do episódio"></textarea>
+      <input type="date" id="data">
+      <input type="text" id="tag" placeholder="Tag / Playlist">
+      <input type="text" id="imagem" placeholder="Link da imagem (.jpg ou .png)">
+      <input type="text" id="audio" placeholder="Link do áudio (.mp3)">
+      <button class="btn" onclick="salvarEpisodio()">Salvar</button>
+    </div>
+    <div id="lista-episodios"></div>
   </div>
-
-  <div class="formulario" id="formulario" style="display:none;">
-    <h2 id="form-titulo">Novo Episódio</h2>
-    <input type="text" id="titulo" placeholder="Título do episódio">
-    <textarea id="descricao" placeholder="Descrição do episódio"></textarea>
-    <input type="date" id="data">
-    <input type="text" id="tag" placeholder="Tag ou categoria (ex: Regimento Geral FAESF)">
-    <input type="text" id="imagem" placeholder="Link da imagem de capa (.jpg ou .png)">
-    <input type="text" id="audio" placeholder="Link do arquivo .mp3">
-    <button onclick="salvarEpisodio()">Salvar</button>
-  </div>
-
-  <div class="episodios" id="lista-episodios"></div>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCiXyKgy5sw26JWPLZBX6SFVLbBDrLOCZw",
@@ -96,25 +137,21 @@
       messagingSenderId: "1097331767383",
       appId: "1:1097331767383:web:7e4228ea735c5365cd4b12"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let modoEdicao = false;
-    let idEdicao = null;
-
-    function mostrarFormulario(dados = null, id = null) {
+    function mostrarFormulario() {
       document.getElementById("formulario").style.display = "block";
-      document.getElementById("form-titulo").textContent = id ? "Editar Episódio" : "Novo Episódio";
-      modoEdicao = !!id;
-      idEdicao = id;
+    }
 
-      document.getElementById("titulo").value = dados?.titulo || "";
-      document.getElementById("descricao").value = dados?.descricao || "";
-      document.getElementById("data").value = dados?.data || "";
-      document.getElementById("tag").value = dados?.tag || "";
-      document.getElementById("imagem").value = dados?.imagem || "";
-      document.getElementById("audio").value = dados?.audio || "";
+    function limparFormulario() {
+      document.getElementById("titulo").value = "";
+      document.getElementById("descricao").value = "";
+      document.getElementById("data").value = "";
+      document.getElementById("tag").value = "";
+      document.getElementById("imagem").value = "";
+      document.getElementById("audio").value = "";
+      document.getElementById("formulario").style.display = "none";
     }
 
     function salvarEpisodio() {
@@ -140,29 +177,10 @@
         criadoEm: firebase.firestore.Timestamp.now()
       };
 
-      if (modoEdicao && idEdicao) {
-        db.collection("episodios").doc(idEdicao).set(episodio).then(() => {
-          carregarEpisodios();
-          limparFormulario();
-        });
-      } else {
-        db.collection("episodios").add(episodio).then(() => {
-          carregarEpisodios();
-          limparFormulario();
-        });
-      }
-    }
-
-    function limparFormulario() {
-      document.getElementById("titulo").value = "";
-      document.getElementById("descricao").value = "";
-      document.getElementById("data").value = "";
-      document.getElementById("tag").value = "";
-      document.getElementById("imagem").value = "";
-      document.getElementById("audio").value = "";
-      document.getElementById("formulario").style.display = "none";
-      modoEdicao = false;
-      idEdicao = null;
+      db.collection("episodios").add(episodio).then(() => {
+        carregarEpisodios();
+        limparFormulario();
+      });
     }
 
     function carregarEpisodios() {
@@ -181,7 +199,6 @@
                 <div class="data">📅 ${ep.data} | 🏷️ ${ep.tag}</div>
                 <div class="descricao">${ep.descricao}</div>
                 <audio controls src="${ep.audio}"></audio>
-                <button onclick='mostrarFormulario(${JSON.stringify(ep)}, "${doc.id}")'>✏️ Editar</button>
               </div>
             </div>
           `;
