@@ -21,29 +21,44 @@
       text-align: center;
     }
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: 40px auto;
       background: white;
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .imagem {
+      width: 300px;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+    .info {
+      flex: 1;
+      min-width: 250px;
     }
     .titulo {
       font-size: 24px;
       font-weight: 600;
       margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .titulo span {
+      font-size: 18px;
+      color: #001f36;
+      cursor: default;
     }
     .data, .tag {
       font-size: 14px;
       color: #666;
       margin-bottom: 4px;
-    }
-    .imagem {
-      width: 100%;
-      max-height: 360px;
-      object-fit: contain;
-      border-radius: 10px;
-      margin-bottom: 20px;
     }
     audio {
       width: 100%;
@@ -51,27 +66,28 @@
     }
     .botoes-compartilhar {
       display: flex;
-      gap: 12px;
-      margin-top: 20px;
+      gap: 10px;
+      margin-top: 15px;
     }
     .botao {
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 20px;
       padding: 6px;
-      border-radius: 6px;
+      color: #001f36;
+      font-size: 18px;
     }
     .botao:hover {
       background-color: #f0f0f0;
+      border-radius: 6px;
     }
     .botao img {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
     }
     .voltar {
       display: inline-block;
-      margin-top: 30px;
+      margin: 30px auto 0;
       text-decoration: none;
       font-size: 14px;
       color: #1d4e89;
@@ -90,19 +106,26 @@
   </header>
   <div class="container">
     <img id="imagem" class="imagem" src="" alt="Imagem do episódio">
-    <div class="titulo" id="titulo"></div>
-    <div class="data" id="data"></div>
-    <div class="tag" id="tag"></div>
-    <p id="descricao"></p>
-    <audio controls id="audio"></audio>
-    <div class="botoes-compartilhar">
-      <button class="botao" onclick="compartilharWhatsApp()" title="Compartilhar no WhatsApp">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
-      </button>
-      <button class="botao" onclick="compartilharLink()" title="Copiar link">
-        📋
-      </button>
+    <div class="info">
+      <div class="titulo">
+        <span title="Episódio individual">🎙️</span>
+        <div id="titulo"></div>
+      </div>
+      <div class="data" id="data"></div>
+      <div class="tag" id="tag"></div>
+      <p id="descricao"></p>
+      <audio controls id="audio"></audio>
+      <div class="botoes-compartilhar">
+        <button class="botao" onclick="compartilharWhatsApp()" title="Compartilhar no WhatsApp">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+        </button>
+        <button class="botao" onclick="compartilharLink()" title="Copiar link do episódio">
+          📋
+        </button>
+      </div>
     </div>
+  </div>
+  <div style="text-align: center;">
     <a href="index.html" class="voltar">⬅️ Voltar à lista</a>
   </div>
 
