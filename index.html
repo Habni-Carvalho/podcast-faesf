@@ -7,9 +7,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
       font-family: "Segoe UI", sans-serif;
       background-color: #f9f9f9;
@@ -23,19 +21,9 @@
       padding: 40px 20px;
       text-align: center;
     }
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-    }
-    header p {
-      margin-top: 10px;
-      font-weight: 300;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 20px;
-    }
+    header h1 { margin: 0; font-size: 28px; }
+    header p { margin-top: 10px; font-weight: 300; }
+    .container { max-width: 900px; margin: auto; padding: 20px; }
     .descricao-site {
       margin-bottom: 30px;
       background: white;
@@ -59,8 +47,7 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
-    .tag-button:hover,
-    .tag-button.active {
+    .tag-button:hover, .tag-button.active {
       background-color: #1d4e89;
       color: white;
     }
@@ -95,23 +82,11 @@
       color: #888;
       margin-bottom: 8px;
     }
-    .episodio p {
-      margin: 10px 0;
-      font-size: 15px;
-    }
-    audio {
-      width: 100%;
-      margin-top: 10px;
-    }
+    .episodio p { margin: 10px 0; font-size: 15px; }
+    audio { width: 100%; margin-top: 10px; }
     @media (max-width: 600px) {
-      .episodio {
-        flex-direction: column;
-        align-items: center;
-      }
-      .episodio img {
-        width: 100%;
-        height: auto;
-      }
+      .episodio { flex-direction: column; align-items: center; }
+      .episodio img { width: 100%; height: auto; }
     }
   </style>
 </head>
@@ -120,13 +95,11 @@
     <h1>🎧 Drops de Conhecimento</h1>
     <p>Uma produção interna da FAESF para formação e alinhamento institucional.</p>
   </header>
-
   <div class="container">
     <div class="descricao-site">
       <h2>Sobre o podcast</h2>
       <p>Este canal é voltado aos colaboradores, professores, coordenadores e equipe técnica da FAESF. Aqui, compartilhamos conteúdos que fortalecem a identidade institucional, a formação continuada e a comunicação estratégica.</p>
     </div>
-
     <div class="tags-container" id="tags">
       <button class="tag-button" onclick="window.location.href='index.html'">Ver todos</button>
     </div>
@@ -152,10 +125,11 @@
       const container = document.getElementById("episodios");
       const tagsBox = document.getElementById("tags");
       container.innerHTML = "";
-
-      const querySnapshot = await db.collection("episodios").orderBy("data", "desc").get();
-      const tagsSet = new Set();
+      tagsBox.innerHTML = "<button class='tag-button' onclick=\"window.location.href='index.html'\">Ver todos</button>";
       todosEpisodios = [];
+
+      const querySnapshot = await db.collection("episodios").orderBy("criadoEm", "desc").get();
+      const tagsSet = new Set();
 
       querySnapshot.forEach((doc) => {
         const ep = doc.data();
@@ -180,6 +154,12 @@
       exibirEpisodios(filtrados);
     }
 
+    function formatarDataBrasileira(dataISO) {
+      if (!dataISO) return "";
+      const [ano, mes, dia] = dataISO.split("-");
+      return `${dia}/${mes}/${ano}`;
+    }
+
     function exibirEpisodios(lista) {
       const container = document.getElementById("episodios");
       container.innerHTML = "";
@@ -191,7 +171,7 @@
           <img src="${ep.imagem}" alt="Imagem do episódio">
           <div class="info">
             <div class="titulo">${ep.titulo}</div>
-            <div class="data">Data: ${ep.data}</div>
+            <div class="data">Data: ${formatarDataBrasileira(ep.data)}</div>
             <div class="tag">Playlist: ${ep.tag}</div>
             <p>${ep.descricao}</p>
             <audio controls src="${ep.audio}"></audio>
