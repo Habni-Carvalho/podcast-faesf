@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Episódio | Drops de Conhecimento</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    header {
+      background-color: #001f36;
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    .titulo {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .data, .tag {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    .imagem {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    audio {
+      width: 100%;
+      margin: 20px 0;
+    }
+    .botoes-compartilhar {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .botao {
+      background-color: #e9ecef;
+      color: #333;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .botao:hover {
+      background-color: #d6dde3;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎧 Drops de Conhecimento</h1>
+  </header>
+  <div class="container">
+    <img id="imagem" class="imagem" src="" alt="Imagem do episódio">
+    <div class="titulo" id="titulo"></div>
+    <div class="data" id="data"></div>
+    <div class="tag" id="tag"></div>
+    <p id="descricao"></p>
+    <audio controls id="audio"></audio>
+    <div class="botoes-compartilhar">
+      <button class="botao" onclick="compartilharWhatsApp()">📱 WhatsApp</button>
+      <button class="botao" onclick="compartilharLink()">🔗 Copiar link</button>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCiXyKgy5sw26JWPLZBX6SFVLbBDrLOCZw",
+      authDomain: "podcasts-faesf-72959.firebaseapp.com",
+      projectId: "podcasts-faesf-72959",
+      storageBucket: "podcasts-faesf-72959.firebasestorage.app",
+      messagingSenderId: "1097331767383",
+      appId: "1:1097331767383:web:7e4228ea735c5365cd4b12"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function formatarData(dataISO) {
+      if (!dataISO) return "";
+      const [ano, mes, dia] = dataISO.split("-");
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    async function carregarEpisodio() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get("id");
+      if (!id) return;
+
+      const doc = await db.collection("episodios").doc(id).get();
+      if (!doc.exists) return;
+
+      const ep = doc.data();
+      document.getElementById("titulo").textContent = ep.titulo;
+      document.getElementById("descricao").textContent = ep.descricao;
+      document.getElementById("data").textContent = `Data: ${formatarData(ep.data)}`;
+      document.getElementById("tag").textContent = `Playlist: ${ep.tag}`;
+      document.getElementById("imagem").src = ep.imagem;
+      document.getElementById("audio").src = ep.audio;
+    }
+
+    function compartilharWhatsApp() {
+      const link = window.location.href;
+      const texto = encodeURIComponent(`🎧 Ouça este episódio do podcast Drops de Conhecimento:\n${link}`);
+      window.open(`https://wa.me/?text=${texto}`, "_blank");
+    }
+
+    function compartilharLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        alert("Link copiado para a área de transferência!");
+      });
+    }
+
+    window.onload = carregarEpisodio;
+  </script>
+</body>
+</html>
