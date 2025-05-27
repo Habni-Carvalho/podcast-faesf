@@ -20,6 +20,28 @@
       padding: 30px;
       text-align: center;
     }
+    .menu-topo {
+      display: flex;
+      justify-content: flex-end;
+      background: #eef1f7;
+      padding: 10px 20px;
+      gap: 10px;
+    }
+    .menu-topo button {
+      border: none;
+      background: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .menu-topo button:hover {
+      background: #e4ebf2;
+    }
     .container {
       max-width: 900px;
       margin: 30px auto;
@@ -32,7 +54,8 @@
       margin-top: 0;
     }
     .formulario input,
-    .formulario textarea {
+    .formulario textarea,
+    .formulario select {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
@@ -112,11 +135,19 @@
   <header>
     <h1>Painel de Episódios</h1>
   </header>
+
+  <div class="menu-topo">
+    <button><span>📈</span> Análise</button>
+    <button><span>🔒</span> Compartilhar</button>
+    <button><span>⚙️</span> Configurações</button>
+  </div>
+
   <div class="container">
     <div class="topo-acoes">
       <h2>Gerenciar episódios</h2>
       <button class="btn" onclick="mostrarFormulario()">+ Novo Episódio</button>
     </div>
+
     <div class="formulario" id="formulario" style="display: none;">
       <input type="text" id="titulo" placeholder="Título do episódio">
       <textarea id="descricao" placeholder="Descrição do episódio"></textarea>
@@ -126,8 +157,15 @@
       <input type="text" id="audio" placeholder="Link do áudio (.mp3)">
       <button class="btn" onclick="salvarEpisodio()">Salvar</button>
     </div>
+
+    <label for="filtro">Filtrar por tag:</label>
+    <select id="filtro" onchange="aplicarFiltro()">
+      <option value="">Todas</option>
+    </select>
+
     <div id="lista-episodios"></div>
   </div>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCiXyKgy5sw26JWPLZBX6SFVLbBDrLOCZw",
@@ -139,6 +177,7 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    let todos = [];
 
     function mostrarFormulario() {
       document.getElementById("formulario").style.display = "block";
@@ -183,27 +222,56 @@
       });
     }
 
+    function aplicarFiltro() {
+      const tagSelecionada = document.getElementById("filtro").value;
+      const lista = document.getElementById("lista-episodios");
+      lista.innerHTML = "";
+      const filtrados = tagSelecionada ? todos.filter(e => e.tag === tagSelecionada) : todos;
+      exibirEpisodios(filtrados);
+    }
+
     function carregarEpisodios() {
       const lista = document.getElementById("lista-episodios");
       lista.innerHTML = "";
+      const filtro = document.getElementById("filtro");
+      filtro.innerHTML = '<option value="">Todas</option>';
+
       db.collection("episodios").orderBy("criadoEm", "desc").get().then((querySnapshot) => {
+        todos = [];
+        const tagsSet = new Set();
         querySnapshot.forEach((doc) => {
           const ep = doc.data();
-          const div = document.createElement("div");
-          div.className = "episodio";
-          div.innerHTML = `
-            <div class="episodio-flex">
-              <img src="${ep.imagem}" alt="Imagem do episódio">
-              <div class="conteudo">
-                <div class="titulo">${ep.titulo}</div>
-                <div class="data">📅 ${ep.data} | 🏷️ ${ep.tag}</div>
-                <div class="descricao">${ep.descricao}</div>
-                <audio controls src="${ep.audio}"></audio>
-              </div>
-            </div>
-          `;
-          lista.appendChild(div);
+          todos.push(ep);
+          tagsSet.add(ep.tag);
         });
+        [...tagsSet].sort().forEach(tag => {
+          const op = document.createElement("option");
+          op.value = tag;
+          op.textContent = tag;
+          filtro.appendChild(op);
+        });
+        exibirEpisodios(todos);
+      });
+    }
+
+    function exibirEpisodios(lista) {
+      const listaE = document.getElementById("lista-episodios");
+      listaE.innerHTML = "";
+      lista.forEach((ep) => {
+        const div = document.createElement("div");
+        div.className = "episodio";
+        div.innerHTML = `
+          <div class="episodio-flex">
+            <img src="${ep.imagem}" alt="Imagem do episódio">
+            <div class="conteudo">
+              <div class="titulo">${ep.titulo}</div>
+              <div class="data">📅 ${ep.data} | 🏷️ ${ep.tag}</div>
+              <div class="descricao">${ep.descricao}</div>
+              <audio controls src="${ep.audio}"></audio>
+            </div>
+          </div>
+        `;
+        listaE.appendChild(div);
       });
     }
 
