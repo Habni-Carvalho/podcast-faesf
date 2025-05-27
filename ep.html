@@ -20,9 +20,20 @@
       padding: 30px 20px;
       text-align: center;
     }
+    .barra-acoes {
+      max-width: 900px;
+      margin: 20px auto 0;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
     .container {
       max-width: 900px;
-      margin: 40px auto;
+      margin: 20px auto;
       background: white;
       padding: 30px;
       border-radius: 12px;
@@ -32,19 +43,19 @@
       gap: 20px;
       position: relative;
     }
-    .voltar {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      font-size: 22px;
-      color: #001f36;
+    .icone {
       background: none;
       border: none;
+      font-size: 22px;
+      color: #001f36;
       cursor: pointer;
-      padding: 6px;
     }
-    .voltar:hover {
+    .icone:hover {
       opacity: 0.7;
+    }
+    .grupo-icons {
+      display: flex;
+      gap: 12px;
     }
     .imagem-container {
       overflow: hidden;
@@ -78,32 +89,15 @@
       width: 100%;
       margin: 20px 0;
     }
-    .botoes-compartilhar {
-      display: flex;
-      gap: 12px;
-      margin-top: 15px;
-    }
-    .botao {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 6px;
-      color: #001f36;
-      font-size: 18px;
-    }
-    .botao:hover {
-      background-color: #f0f0f0;
-      border-radius: 6px;
-    }
     @media (max-width: 700px) {
       .container {
         flex-direction: column;
         align-items: center;
       }
-      .voltar {
-        position: static;
-        margin-bottom: 10px;
-        align-self: flex-start;
+      .barra-acoes {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px 16px;
       }
     }
   </style>
@@ -112,8 +106,16 @@
   <header>
     <h1>🎧 Drops de Conhecimento</h1>
   </header>
+
+  <div class="barra-acoes">
+    <button class="icone" onclick="window.location.href='index.html'" title="Voltar à lista">🡐</button>
+    <div class="grupo-icons">
+      <button class="icone" onclick="compartilharWhatsApp()" title="Compartilhar no WhatsApp">📤</button>
+      <button class="icone" onclick="compartilharLink()" title="Copiar link do episódio">🔗</button>
+    </div>
+  </div>
+
   <div class="container">
-    <button class="voltar" onclick="window.location.href='index.html'" title="Voltar à lista">🡐</button>
     <div class="imagem-container">
       <img id="imagem" class="imagem" src="" alt="Imagem do episódio">
     </div>
@@ -123,10 +125,6 @@
       <div class="tag" id="tag"></div>
       <p id="descricao"></p>
       <audio controls id="audio"></audio>
-      <div class="botoes-compartilhar">
-        <button class="botao" onclick="compartilharWhatsApp()" title="Compartilhar no WhatsApp">📤</button>
-        <button class="botao" onclick="compartilharLink()" title="Copiar link do episódio">🔗</button>
-      </div>
     </div>
   </div>
 
