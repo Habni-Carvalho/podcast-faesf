@@ -128,14 +128,16 @@
       tagsBox.innerHTML = "<button class='tag-button' onclick=\"window.location.href='index.html'\">Ver todos</button>";
       todosEpisodios = [];
 
-      const querySnapshot = await db.collection("episodios").orderBy("criadoEm", "desc").get();
+      const querySnapshot = await db.collection("episodios").get();
       const tagsSet = new Set();
 
       querySnapshot.forEach((doc) => {
         const ep = doc.data();
-        todosEpisodios.push(ep);
+        todosEpisodios.push({ ...ep, criadoEm: ep.criadoEm?.toDate?.() || new Date(0) });
         if (ep.tag) tagsSet.add(ep.tag);
       });
+
+      todosEpisodios.sort((a, b) => b.criadoEm - a.criadoEm);
 
       [...tagsSet].sort().forEach(tag => {
         const btn = document.createElement("button");
