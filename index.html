@@ -83,6 +83,21 @@
       margin-bottom: 8px;
     }
     .episodio p { margin: 10px 0; font-size: 15px; }
+    .ver-mais {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 14px;
+      background-color: #e3ecf7;
+      color: #1d4e89;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .ver-mais:hover {
+      background-color: #d4e1f0;
+    }
     audio { width: 100%; margin-top: 10px; }
     #ver-mais-btn {
       padding: 6px 12px;
@@ -142,7 +157,7 @@
 
       querySnapshot.forEach((doc) => {
         const ep = doc.data();
-        todosEpisodios.push({ ...ep, criadoEm: ep.criadoEm?.toDate?.() || new Date(0) });
+        todosEpisodios.push({ ...ep, id: doc.id, criadoEm: ep.criadoEm?.toDate?.() || new Date(0) });
         if (ep.tag) tagsSet.add(ep.tag);
       });
 
@@ -205,6 +220,7 @@
             <div class="tag">Playlist: ${ep.tag}</div>
             <p>${ep.descricao}</p>
             <audio controls src="${ep.audio}"></audio>
+            <a class="ver-mais" href="ep.html?id=${ep.id}">Ver mais</a>
           </div>
         `;
         container.appendChild(div);
