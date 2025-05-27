@@ -40,8 +40,8 @@
     }
     .imagem {
       width: 100%;
-      max-height: 300px;
-      object-fit: cover;
+      max-height: 360px;
+      object-fit: contain;
       border-radius: 10px;
       margin-bottom: 20px;
     }
@@ -51,21 +51,23 @@
     }
     .botoes-compartilhar {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       margin-top: 20px;
     }
     .botao {
-      background-color: #e9ecef;
-      color: #333;
+      background: none;
       border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-size: 14px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      font-size: 20px;
+      padding: 6px;
+      border-radius: 6px;
     }
     .botao:hover {
-      background-color: #d6dde3;
+      background-color: #f0f0f0;
+    }
+    .botao img {
+      width: 22px;
+      height: 22px;
     }
   </style>
 </head>
@@ -81,8 +83,12 @@
     <p id="descricao"></p>
     <audio controls id="audio"></audio>
     <div class="botoes-compartilhar">
-      <button class="botao" onclick="compartilharWhatsApp()">📱 WhatsApp</button>
-      <button class="botao" onclick="compartilharLink()">🔗 Copiar link</button>
+      <button class="botao" onclick="compartilharWhatsApp()" title="Compartilhar no WhatsApp">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+      </button>
+      <button class="botao" onclick="compartilharLink()" title="Copiar link">
+        📋
+      </button>
     </div>
   </div>
 
