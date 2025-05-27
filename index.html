@@ -57,6 +57,7 @@
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+      position: relative;
       display: flex;
       flex-direction: row;
       gap: 20px;
@@ -84,19 +85,18 @@
     }
     .episodio p { margin: 10px 0; font-size: 15px; }
     .ver-mais {
-      display: inline-block;
-      margin-top: 10px;
-      font-size: 14px;
-      background-color: #e3ecf7;
-      color: #1d4e89;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
       border: none;
-      border-radius: 6px;
-      padding: 6px 12px;
+      font-size: 18px;
+      color: #1d4e89;
       cursor: pointer;
       text-decoration: none;
     }
     .ver-mais:hover {
-      background-color: #d4e1f0;
+      text-decoration: underline;
     }
     audio { width: 100%; margin-top: 10px; }
     #ver-mais-btn {
@@ -111,6 +111,7 @@
     @media (max-width: 600px) {
       .episodio { flex-direction: column; align-items: center; }
       .episodio img { width: 100%; height: auto; }
+      .ver-mais { position: static; margin-top: 10px; text-align: right; display: block; }
     }
   </style>
 </head>
@@ -213,6 +214,7 @@
         const div = document.createElement("div");
         div.className = "episodio";
         div.innerHTML = `
+          <a class="ver-mais" href="ep.html?id=${ep.id}" title="Ver mais sobre este episódio">🔎</a>
           <img src="${ep.imagem}" alt="Imagem do episódio">
           <div class="info">
             <div class="titulo">${ep.titulo}</div>
@@ -220,7 +222,6 @@
             <div class="tag">Playlist: ${ep.tag}</div>
             <p>${ep.descricao}</p>
             <audio controls src="${ep.audio}"></audio>
-            <a class="ver-mais" href="ep.html?id=${ep.id}">Ver mais</a>
           </div>
         `;
         container.appendChild(div);
