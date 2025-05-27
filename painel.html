@@ -20,28 +20,6 @@
       padding: 30px;
       text-align: center;
     }
-    .menu-topo {
-      display: flex;
-      justify-content: flex-end;
-      background: #eef1f7;
-      padding: 10px 20px;
-      gap: 10px;
-    }
-    .menu-topo button {
-      border: none;
-      background: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
-    .menu-topo button:hover {
-      background: #e4ebf2;
-    }
     .container {
       max-width: 900px;
       margin: 30px auto;
@@ -117,8 +95,14 @@
       align-items: center;
       margin-bottom: 20px;
     }
-    .topo-acoes button {
-      font-size: 14px;
+    .botoes-acoes {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+    .btn-small {
+      font-size: 12px;
+      padding: 6px 12px;
     }
     @media (max-width: 600px) {
       .episodio-flex {
@@ -135,12 +119,6 @@
   <header>
     <h1>Painel de Episódios</h1>
   </header>
-
-  <div class="menu-topo">
-    <button><span>📈</span> Análise</button>
-    <button><span>🔒</span> Compartilhar</button>
-    <button><span>⚙️</span> Configurações</button>
-  </div>
 
   <div class="container">
     <div class="topo-acoes">
@@ -178,12 +156,21 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     let todos = [];
+    let editandoId = null;
 
-    function mostrarFormulario() {
+    function mostrarFormulario(ep = null, id = null) {
       document.getElementById("formulario").style.display = "block";
+      editandoId = id;
+      document.getElementById("titulo").value = ep?.titulo || "";
+      document.getElementById("descricao").value = ep?.descricao || "";
+      document.getElementById("data").value = ep?.data || "";
+      document.getElementById("tag").value = ep?.tag || "";
+      document.getElementById("imagem").value = ep?.imagem || "";
+      document.getElementById("audio").value = ep?.audio || "";
     }
 
     function limparFormulario() {
+      editandoId = null;
       document.getElementById("titulo").value = "";
       document.getElementById("descricao").value = "";
       document.getElementById("data").value = "";
@@ -207,19 +194,30 @@
       }
 
       const episodio = {
-        titulo,
-        descricao,
-        data,
-        imagem,
-        audio,
-        tag,
+        titulo, descricao, data, imagem, audio, tag,
         criadoEm: firebase.firestore.Timestamp.now()
       };
 
-      db.collection("episodios").add(episodio).then(() => {
-        carregarEpisodios();
-        limparFormulario();
-      });
+      const ref = db.collection("episodios");
+      if (editandoId) {
+        ref.doc(editandoId).set(episodio).then(() => {
+          carregarEpisodios();
+          limparFormulario();
+        });
+      } else {
+        ref.add(episodio).then(() => {
+          carregarEpisodios();
+          limparFormulario();
+        });
+      }
+    }
+
+    function excluirEpisodio(id) {
+      if (confirm("Tem certeza que deseja excluir este episódio?")) {
+        db.collection("episodios").doc(id).delete().then(() => {
+          carregarEpisodios();
+        });
+      }
     }
 
     function aplicarFiltro() {
@@ -241,6 +239,7 @@
         const tagsSet = new Set();
         querySnapshot.forEach((doc) => {
           const ep = doc.data();
+          ep.id = doc.id;
           todos.push(ep);
           tagsSet.add(ep.tag);
         });
@@ -268,6 +267,10 @@
               <div class="data">📅 ${ep.data} | 🏷️ ${ep.tag}</div>
               <div class="descricao">${ep.descricao}</div>
               <audio controls src="${ep.audio}"></audio>
+              <div class="botoes-acoes">
+                <button class="btn btn-small" onclick='mostrarFormulario(${JSON.stringify(ep)}, "${ep.id}")'>✏️ Editar</button>
+                <button class="btn btn-small" onclick='excluirEpisodio("${ep.id}")'>🗑️ Excluir</button>
+              </div>
             </div>
           </div>
         `;
