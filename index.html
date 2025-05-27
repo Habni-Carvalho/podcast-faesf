@@ -127,7 +127,9 @@
       <p>Este canal é voltado aos colaboradores, professores, coordenadores e equipe técnica da FAESF. Aqui, compartilhamos conteúdos que fortalecem a identidade institucional, a formação continuada e a comunicação estratégica.</p>
     </div>
 
-    <div class="tags-container" id="tags"></div>
+    <div class="tags-container" id="tags">
+      <button class="tag-button" onclick="window.location.href='index.html'">Ver todos</button>
+    </div>
     <div id="episodios"></div>
   </div>
 
@@ -150,25 +152,16 @@
       const container = document.getElementById("episodios");
       const tagsBox = document.getElementById("tags");
       container.innerHTML = "";
-      tagsBox.innerHTML = "";
-      todosEpisodios = [];
 
       const querySnapshot = await db.collection("episodios").orderBy("data", "desc").get();
       const tagsSet = new Set();
+      todosEpisodios = [];
 
       querySnapshot.forEach((doc) => {
         const ep = doc.data();
         todosEpisodios.push(ep);
         if (ep.tag) tagsSet.add(ep.tag);
       });
-
-      const verTudo = document.createElement("button");
-      verTudo.className = "tag-button" + (!tagURL ? " active" : "");
-      verTudo.textContent = "Ver todos";
-      verTudo.onclick = () => {
-        window.location.href = window.location.pathname;
-      };
-      tagsBox.appendChild(verTudo);
 
       [...tagsSet].sort().forEach(tag => {
         const btn = document.createElement("button");
