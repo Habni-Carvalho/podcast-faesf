@@ -57,7 +57,6 @@
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 1px 6px rgba(0,0,0,0.05);
-      position: relative;
       display: flex;
       flex-direction: row;
       gap: 20px;
@@ -69,14 +68,20 @@
       object-fit: cover;
       border-radius: 8px;
       flex-shrink: 0;
+      cursor: pointer;
     }
     .episodio .info {
       flex: 1;
+      position: relative;
     }
     .episodio .titulo {
       font-size: 18px;
       font-weight: 600;
       margin-bottom: 5px;
+    }
+    .episodio .titulo a {
+      text-decoration: none;
+      color: inherit;
     }
     .episodio .data, .episodio .tag {
       font-size: 13px;
@@ -84,18 +89,14 @@
       margin-bottom: 8px;
     }
     .episodio p { margin: 10px 0; font-size: 15px; }
-    .ver-mais {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: none;
-      border: none;
-      font-size: 18px;
-      color: #1d4e89;
-      cursor: pointer;
+    .icone-vermais {
+      font-size: 16px;
+      margin-right: 8px;
+      color: #001f36;
       text-decoration: none;
+      vertical-align: middle;
     }
-    .ver-mais:hover {
+    .icone-vermais:hover {
       text-decoration: underline;
     }
     audio { width: 100%; margin-top: 10px; }
@@ -111,7 +112,6 @@
     @media (max-width: 600px) {
       .episodio { flex-direction: column; align-items: center; }
       .episodio img { width: 100%; height: auto; }
-      .ver-mais { position: static; margin-top: 10px; text-align: right; display: block; }
     }
   </style>
 </head>
@@ -214,10 +214,13 @@
         const div = document.createElement("div");
         div.className = "episodio";
         div.innerHTML = `
-          <a class="ver-mais" href="ep.html?id=${ep.id}" title="Ver mais sobre este episódio">🔎</a>
-          <img src="${ep.imagem}" alt="Imagem do episódio">
+          <img src="${ep.imagem}" alt="Imagem do episódio" onclick="location.href='ep.html?id=${ep.id}'" title="Ver episódio completo">
           <div class="info">
-            <div class="titulo">${ep.titulo}</div>
+            <div class="titulo">
+              <a href="ep.html?id=${ep.id}" title="Ver episódio completo">
+                🔎 ${ep.titulo}
+              </a>
+            </div>
             <div class="data">Data: ${formatarDataBrasileira(ep.data)}</div>
             <div class="tag">Playlist: ${ep.tag}</div>
             <p>${ep.descricao}</p>
