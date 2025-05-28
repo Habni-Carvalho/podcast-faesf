@@ -162,19 +162,20 @@
     </div>
 
     <div class="formulario" id="formulario" style="display: none;">
-      <input type="text" id="titulo" placeholder="Título do episódio">
-      <textarea id="descricao" placeholder="Descrição do episódio"></textarea>
-      <input type="date" id="data">
-      <input type="text" id="tag" placeholder="Tag / Playlist">
-      <input type="text" id="imagem" placeholder="Link da imagem (.jpg ou .png)">
-      <input type="text" id="audio" placeholder="Link do áudio (.mp3)">
-      <div class="btn-salvar">
-        <button onclick="salvarEpisodio()" title="Salvar">
-          <i data-lucide="save"></i>
-          Salvar
-        </button>
-      </div>
-    </div>
+  <input type="text" id="titulo" placeholder="Título do episódio">
+  <textarea id="descricao" placeholder="Descrição do episódio"></textarea>
+  <input type="date" id="data">
+  <input type="text" id="tag" placeholder="Tag / Playlist">
+  <input type="text" id="imagem" placeholder="Link da imagem (.jpg ou .png)">
+  <input type="text" id="audio" placeholder="Link do áudio (.mp3)">
+  <div style="text-align: right;">
+    <button onclick="salvarEpisodio()" title="Salvar" style="border: 1px solid #001f36; background: none; color: #001f36; padding: 10px 16px; font-size: 15px; border-radius: 12px; display: inline-flex; align-items: center; gap: 6px;">
+      <i data-lucide="save" style="stroke: #001f36;"></i>
+      Salvar
+    </button>
+  </div>
+</div>
+
 
     <label for="filtro">Filtrar por tag:</label>
     <select id="filtro" onchange="aplicarFiltro()">
