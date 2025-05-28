@@ -12,7 +12,7 @@
       font-family: "Segoe UI", sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f4f6f9;
+      background-color: #e9ecf1;
       color: #333;
     }
     header {
@@ -29,8 +29,12 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       padding: 30px;
     }
-    h2 {
-      margin-top: 0;
+    .formulario {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
     }
     .formulario input,
     .formulario textarea,
@@ -50,24 +54,19 @@
       border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
     .btn:hover {
       background-color: #003354;
     }
     .btn-small {
-      font-size: 12px;
-      padding: 6px 12px;
-    }
-    .btn-small i {
-      width: 16px;
-      height: 16px;
+      padding: 6px 10px;
+      font-size: 13px;
     }
     .episodio {
       background: #fff;
-      border: 1px solid #e1e1e1;
       border-radius: 10px;
       padding: 20px;
       margin-bottom: 20px;
@@ -101,19 +100,10 @@
     .conteudo .descricao {
       margin: 10px 0;
     }
-    .topo-acoes {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
     .botoes-acoes {
-      margin-top: 10px;
       display: flex;
       gap: 10px;
-    }
-    #filtro {
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
     i {
       color: #001f36;
@@ -133,13 +123,10 @@
   <header>
     <h1>Painel de Episódios</h1>
   </header>
-
   <div class="container">
     <div class="topo-acoes">
       <h2>Gerenciar episódios</h2>
-      <button class="btn" onclick="mostrarFormulario()">
-        <i data-lucide="square-pen"></i> Novo Episódio
-      </button>
+      <button class="btn" onclick="mostrarFormulario()"><i data-lucide="circle-plus"></i> Novo Episódio</button>
     </div>
 
     <div class="formulario" id="formulario" style="display: none;">
@@ -149,7 +136,7 @@
       <input type="text" id="tag" placeholder="Tag / Playlist">
       <input type="text" id="imagem" placeholder="Link da imagem (.jpg ou .png)">
       <input type="text" id="audio" placeholder="Link do áudio (.mp3)">
-      <button class="btn" onclick="salvarEpisodio()">Salvar</button>
+      <button class="btn" onclick="salvarEpisodio()"><i data-lucide="save"></i> Salvar</button>
     </div>
 
     <label for="filtro">Filtrar por tag:</label>
@@ -273,14 +260,14 @@
           <div class="episodio-flex">
             <img src="${ep.imagem}" alt="Imagem do episódio">
             <div class="conteudo">
+              <div class="botoes-acoes">
+                <button class="btn btn-small" onclick='mostrarFormulario(${JSON.stringify(ep)}, "${ep.id}")'><i data-lucide="square-pen"></i></button>
+                <button class="btn btn-small" onclick='excluirEpisodio("${ep.id}")'><i data-lucide="trash-2"></i></button>
+              </div>
               <div class="titulo">${ep.titulo}</div>
               <div class="data">📅 ${ep.data} | 🏷️ ${ep.tag}</div>
               <div class="descricao">${ep.descricao}</div>
               <audio controls src="${ep.audio}"></audio>
-              <div class="botoes-acoes">
-                <button class="btn btn-small" onclick='mostrarFormulario(${JSON.stringify(ep)}, "${ep.id}")'><i data-lucide="square-pen"></i> Editar</button>
-                <button class="btn btn-small" onclick='excluirEpisodio("${ep.id}")'><i data-lucide="trash-2"></i> Excluir</button>
-              </div>
             </div>
           </div>
         `;
