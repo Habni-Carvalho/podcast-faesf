@@ -46,6 +46,21 @@
       border-radius: 12px;
       font-size: 15px;
     }
+    .formulario .btn-salvar {
+      float: right;
+    }
+    .formulario .btn-salvar button {
+      background-color: #001f36;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
     .btn-icon {
       background: none;
       border: none;
@@ -56,18 +71,13 @@
       height: 20px;
       stroke: #001f36;
     }
-    .btn-flutuante {
-      position: absolute;
-      right: 20px;
-      bottom: 20px;
-      background: none;
-    }
     .episodio {
       background: #fff;
       border-radius: 24px;
       padding: 20px;
       margin-bottom: 20px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      position: relative;
     }
     .episodio-flex {
       display: flex;
@@ -149,21 +159,22 @@
         <i data-lucide="circle-plus"></i>
         Novo Episódio
       </button>
-   
-<div class="formulario" id="formulario" style="display: none;">
-  <input type="text" id="titulo" placeholder="Título do episódio">
-  <textarea id="descricao" placeholder="Descrição do episódio"></textarea>
-  <input type="date" id="data">
-  <input type="text" id="tag" placeholder="Tag / Playlist">
-  <input type="text" id="imagem" placeholder="Link da imagem (.jpg ou .png)">
-  <input type="text" id="audio" placeholder="Link do áudio (.mp3)">
-  <div style="text-align: right;">
-    <button class="btn" onclick="salvarEpisodio()" title="Salvar">
-      <i data-lucide="save"></i>
-      Salvar
-    </button>
-  </div>
-</div>
+    </div>
+
+    <div class="formulario" id="formulario" style="display: none;">
+      <input type="text" id="titulo" placeholder="Título do episódio">
+      <textarea id="descricao" placeholder="Descrição do episódio"></textarea>
+      <input type="date" id="data">
+      <input type="text" id="tag" placeholder="Tag / Playlist">
+      <input type="text" id="imagem" placeholder="Link da imagem (.jpg ou .png)">
+      <input type="text" id="audio" placeholder="Link do áudio (.mp3)">
+      <div class="btn-salvar">
+        <button onclick="salvarEpisodio()" title="Salvar">
+          <i data-lucide="save"></i>
+          Salvar
+        </button>
+      </div>
+    </div>
 
     <label for="filtro">Filtrar por tag:</label>
     <select id="filtro" onchange="aplicarFiltro()">
