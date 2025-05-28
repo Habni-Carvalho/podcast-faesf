@@ -1,182 +1,153 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Episódio | Drops de Conhecimento</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background-color: #f8f9fa;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
-    header {
-      background-color: #001f36;
-      color: white;
-      padding: 30px 20px;
-      text-align: center;
-    }
-    .barra-acoes {
-      max-width: 900px;
-      margin: 20px auto 0;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .container {
-      max-width: 900px;
-      margin: 20px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      position: relative;
-    }
-    .icone {
-      background: none;
-      border: none;
-      font-size: 22px;
-      color: #001f36;
-      cursor: pointer;
-    }
-    .icone:hover {
-      opacity: 0.7;
-    }
-    .grupo-icons {
-      display: flex;
-      gap: 12px;
-    }
-    .imagem-container {
-      overflow: hidden;
-      border-radius: 12px;
-    }
-    .imagem {
-      width: 300px;
-      max-width: 100%;
-      height: auto;
-      object-fit: contain;
-      display: block;
-    }
-    .info {
-      flex: 1;
-      min-width: 250px;
-    }
-    .titulo {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .data, .tag {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 4px;
-    }
-    audio {
-      width: 100%;
-      margin: 20px 0;
-    }
-    @media (max-width: 700px) {
-      .container {
-        flex-direction: column;
-        align-items: center;
-      }
-      .barra-acoes {
-        flex-direction: column;
-        gap: 10px;
-        padding: 12px 16px;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Episódio | Drops de Conhecimento</title>
+
+<!-- Lucide  -->
+<script defer src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root{
+  --azul:#001f36;
+  --cinza:#f1f1f4;
+  --bg:#e6e7ea;
+  --radius:1.6rem;
+  font-size:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Segoe UI,system-ui,sans-serif;}
+
+body{background:var(--bg);color:#222}
+
+/* cabeçalho */
+header{background:var(--azul);color:#fff;padding:2rem 1rem;text-align:center}
+header h1{display:flex;justify-content:center;align-items:center;gap:.5rem;font-size:1.6rem;font-weight:700}
+header svg{stroke:#fff;width:26px;height:26px}
+
+/* barra de ação --------------------- */
+.action-bar{
+  max-width:900px;margin:-1.5rem auto 1rem;
+  padding:.5rem 1rem;display:flex;justify-content:space-between;align-items:center
+}
+.icon-btn{
+  background:none;border:none;padding:.35rem;cursor:pointer;position:relative
+}
+.icon-btn svg{stroke:var(--azul);width:24px;height:24px}
+.icon-btn:hover::after{
+  content:attr(data-label);position:absolute;bottom:110%;left:50%;transform:translateX(-50%);
+  font-size:.75rem;background:var(--azul);color:#fff;padding:.25rem .5rem;border-radius:4px;white-space:nowrap
+}
+.icon-group{display:flex;gap:.6rem}
+
+/* card episódio -------------------- */
+.card{
+  background:#fff;border-radius:var(--radius);
+  max-width:900px;margin:0 auto 2rem;padding:2rem 1.6rem;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  display:flex;flex-direction:column;gap:1.5rem
+}
+.top{
+  display:flex;gap:1.6rem
+}
+.top img{
+  width:240px;min-width:240px;height:240px;object-fit:cover;border-radius:10px
+}
+.info{flex:1}
+.info h2{font-size:1.35rem;margin-bottom:.5rem}
+small{display:inline-flex;align-items:center;gap:.3rem;font-size:.85rem;color:#555}
+.info p{margin-top:1rem;font-size:.95rem;line-height:1.4}
+audio{width:100%;margin-top:1.2rem;border-radius:25px;background:#fafafa}
+
+/* responsivo */
+@media(max-width:650px){
+  .top{flex-direction:column;align-items:center;text-align:center}
+  .top img{width:100%;height:auto}
+}
+</style>
 </head>
 <body>
-  <header>
-    <h1>🎧 Drops de Conhecimento</h1>
-  </header>
 
-  <div class="barra-acoes">
-    <button class="icone" onclick="window.location.href='index.html'" title="Voltar à lista">🡐</button>
-    <div class="grupo-icons">
-      <button class="icone" onclick="compartilharWhatsApp()" title="Compartilhar no WhatsApp">📤</button>
-      <button class="icone" onclick="compartilharLink()" title="Copiar link do episódio">🔗</button>
-    </div>
+<!-- Cabeçalho ------------------------------------------------------------>
+<header>
+  <h1><i data-lucide="headphones"></i>Drops de Conhecimento</h1>
+</header>
+
+<!-- Barra de ação -------------------------------------------------------->
+<div class="action-bar">
+  <button class="icon-btn" data-label="Voltar" onclick="history.back()">
+    <i data-lucide="chevron-left"></i>
+  </button>
+  <div class="icon-group">
+    <button class="icon-btn" id="whatsBtn" data-label="WhatsApp">
+      <i data-lucide="message-circle-more"></i>
+    </button>
+    <button class="icon-btn" id="copyBtn" data-label="Copiar link">
+      <i data-lucide="copy"></i>
+    </button>
   </div>
+</div>
 
-  <div class="container">
-    <div class="imagem-container">
-      <img id="imagem" class="imagem" src="" alt="Imagem do episódio">
-    </div>
-    <div class="info">
-      <div class="titulo" id="titulo"></div>
-      <div class="data" id="data"></div>
-      <div class="tag" id="tag"></div>
-      <p id="descricao"></p>
-      <audio controls id="audio"></audio>
-    </div>
-  </div>
+<!-- Card do episódio ----------------------------------------------------->
+<article class="card" id="card">
+  <!-- Conteúdo preenchido via JS -->
+</article>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCiXyKgy5sw26JWPLZBX6SFVLbBDrLOCZw",
-      authDomain: "podcasts-faesf-72959.firebaseapp.com",
-      projectId: "podcasts-faesf-72959",
-      storageBucket: "podcasts-faesf-72959.firebasestorage.app",
-      messagingSenderId: "1097331767383",
-      appId: "1:1097331767383:web:7e4228ea735c5365cd4b12"
-    };
+<!-- Firebase + Lógica ---------------------------------------------------->
+<script type="module">
+import { initializeApp }  from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+const firebaseConfig = {
+  apiKey: "AIzaSyCiXyKgy5sw26JWPLZBX6SFVLbBDrLOCZw",
+  authDomain: "podcasts-faesf-72959.firebaseapp.com",
+  projectId: "podcasts-faesf-72959",
+  storageBucket: "podcasts-faesf-72959.appspot.com",
+  messagingSenderId: "1097331767383",
+  appId: "1:1097331767383:web:7e4228ea735c5365cd4b12"
+};
+initializeApp(firebaseConfig);
+const db = getFirestore();
 
-    function formatarData(dataISO) {
-      if (!dataISO) return "";
-      const [ano, mes, dia] = dataISO.split("-");
-      return `${dia}/${mes}/${ano}`;
-    }
+/* util ------------ */
+const qs = new URLSearchParams(location.search);
+const id = qs.get("id");
 
-    async function carregarEpisodio() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const id = urlParams.get("id");
-      if (!id) return;
+/* busca episódio */
+async function carregar(){
+  if(!id){location.href="index.html";return;}
+  const snap = await getDoc(doc(db,"episodios",id));
+  if(!snap.exists()){location.href="index.html";return;}
+  const ep = snap.data();
+  render(ep);
+}
+function render(ep){
+  const card = document.getElementById("card");
+  card.innerHTML = `
+    <div class="top">
+      <img src="${ep.imagem||''}" alt="Capa do episódio">
+      <div class="info">
+        <h2>${ep.titulo}</h2>
+        <small><i data-lucide="calendar" style="width:14px;height:14px;"></i> ${ep.data} | 
+               <i data-lucide="tag" style="width:14px;height:14px;"></i> ${ep.tag||"Sem tag"}</small>
+        <p>${ep.descricao}</p>
+        <audio controls src="${ep.audio}"></audio>
+      </div>
+    </div>`;
+  
+  /* ações de compartilhamento */
+  const link = location.href;
+  document.getElementById("copyBtn").onclick = ()=>{
+    navigator.clipboard.writeText(link).then(()=>alert("Link copiado!"));
+  };
+  document.getElementById("whatsBtn").onclick = ()=>{
+    const msg = encodeURIComponent(`📢 *${ep.titulo}*\n\nOuça agora: ${link}`);
+    window.open(`https://wa.me/?text=${msg}`,"_blank");
+  };
 
-      const doc = await db.collection("episodios").doc(id).get();
-      if (!doc.exists) return;
-
-      const ep = doc.data();
-      document.getElementById("titulo").textContent = ep.titulo;
-      document.getElementById("descricao").textContent = ep.descricao;
-      document.getElementById("data").textContent = `Data: ${formatarData(ep.data)}`;
-      document.getElementById("tag").textContent = `Playlist: ${ep.tag}`;
-      document.getElementById("imagem").src = ep.imagem;
-      document.getElementById("audio").src = ep.audio;
-    }
-
-    function compartilharWhatsApp() {
-      const link = window.location.href;
-      const texto = encodeURIComponent(`🎧 Ouça este episódio do podcast Drops de Conhecimento:\n${link}`);
-      window.open(`https://wa.me/?text=${texto}`, "_blank");
-    }
-
-    function compartilharLink() {
-      navigator.clipboard.writeText(window.location.href).then(() => {
-        alert("Link copiado para a área de transferência!");
-      });
-    }
-
-    window.onload = carregarEpisodio;
-  </script>
+  lucide.createIcons();
+}
+carregar();
+</script>
 </body>
 </html>
