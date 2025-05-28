@@ -68,40 +68,41 @@
       padding: 20px;
       margin-bottom: 20px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      position: relative;
     }
-    .episodio img {
+    .episodio-flex {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .conteudo-flex {
+      display: flex;
+      flex: 1;
+      gap: 20px;
+    }
+    .conteudo img {
       width: 150px;
       height: 150px;
       object-fit: cover;
       border-radius: 16px;
-      margin-right: 20px;
     }
-    .episodio-flex {
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-    .conteudo {
+    .conteudo-texto {
       flex: 1;
     }
-    .conteudo .titulo {
+    .titulo {
       font-size: 18px;
       font-weight: bold;
     }
-    .conteudo .data {
+    .data {
       font-size: 13px;
       color: #777;
       margin-top: 5px;
     }
-    .conteudo .descricao {
+    .descricao {
       margin: 10px 0;
     }
     .icones-laterais {
-      position: absolute;
-      right: 20px;
-      top: 20px;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -130,12 +131,9 @@
       stroke: #001f36;
     }
     @media (max-width: 600px) {
-      .episodio-flex {
+      .conteudo-flex {
         flex-direction: column;
         align-items: center;
-      }
-      .episodio img {
-        margin: 0 auto;
       }
     }
   </style>
@@ -284,20 +282,24 @@
         div.className = "episodio";
         div.innerHTML = `
           <div class="episodio-flex">
-            <img src="${ep.imagem}" alt="Imagem do episódio">
-            <div class="conteudo">
-              <div class="icones-laterais">
-                <button class="btn-icon" onclick='mostrarFormulario(${JSON.stringify(ep)}, "${ep.id}")' title="Editar episódio">
-                  <i data-lucide="square-pen"></i>
-                </button>
-                <button class="btn-icon" onclick='excluirEpisodio("${ep.id}")' title="Excluir episódio">
-                  <i data-lucide="trash-2"></i>
-                </button>
+            <div class="conteudo-flex">
+              <div class="conteudo">
+                <img src="${ep.imagem}" alt="Imagem do episódio">
               </div>
-              <div class="titulo">${ep.titulo}</div>
-              <div class="data">📅 ${ep.data} | 🏷️ ${ep.tag}</div>
-              <div class="descricao">${ep.descricao}</div>
-              <audio controls src="${ep.audio}"></audio>
+              <div class="conteudo-texto">
+                <div class="titulo">${ep.titulo}</div>
+                <div class="data">📅 ${ep.data} | 🏷️ ${ep.tag}</div>
+                <div class="descricao">${ep.descricao}</div>
+                <audio controls src="${ep.audio}"></audio>
+              </div>
+            </div>
+            <div class="icones-laterais">
+              <button class="btn-icon" onclick='mostrarFormulario(${JSON.stringify(ep)}, "${ep.id}")' title="Editar episódio">
+                <i data-lucide="square-pen"></i>
+              </button>
+              <button class="btn-icon" onclick='excluirEpisodio("${ep.id}")' title="Excluir episódio">
+                <i data-lucide="trash-2"></i>
+              </button>
             </div>
           </div>
         `;
