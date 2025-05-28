@@ -1,139 +1,173 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Podcast FAESF</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <style>
-    body {
-      margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background-color: #ebedf0;
-      color: #333;
-    }
-    header {
-      background-color: #001f36;
-      color: white;
-      padding: 40px 20px;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 26px;
-    }
-    .container {
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 20px;
-    }
-    .episodio {
-      background: white;
-      border-radius: 24px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      position: relative;
-    }
-    .episodio-flex {
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-    .episodio img {
-      width: 150px;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 16px;
-    }
-    .info {
-      flex: 1;
-    }
-    .info .titulo {
-      font-size: 18px;
-      font-weight: bold;
-    }
-    .info .data {
-      font-size: 13px;
-      color: #777;
-      margin-top: 5px;
-    }
-    .info .descricao {
-      margin: 10px 0;
-    }
-    .ver-mais-icon {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-    .ver-mais-icon i {
-      width: 20px;
-      height: 20px;
-      stroke: #001f36;
-    }
-    @media (max-width: 600px) {
-      .episodio-flex {
-        flex-direction: column;
-        align-items: center;
-      }
-      .episodio img {
-        margin: 0 auto;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Drops de Conhecimento | FAESF</title>
+
+<!-- Lucide → ícones em linha SVG -->
+<script defer src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root{
+  --azul:#001f36;
+  --cinza:#f1f1f4;
+  --cinza-claro:#fafafa;
+  --radius:1.6rem;
+  font-size:16px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Segoe UI,system-ui,sans-serif;}
+
+body{background:#e6e7ea;color:#222;}
+
+header{
+  background:var(--azul);color:#fff;padding:2.5rem 1rem;text-align:center;
+}
+header h1{font-size:1.6rem;font-weight:700;display:flex;justify-content:center;align-items:center;gap:.5rem}
+header svg{stroke:#fff;width:26px;height:26px}
+
+main{max-width:900px;margin:auto;padding:2rem 1rem}
+
+/* TAGS ------------------------------------------------------------------ */
+.tags{display:flex;flex-wrap:wrap;gap:.6rem;margin:0 0 1.5rem}
+.tag-btn{
+  display:inline-flex;align-items:center;gap:.35rem;
+  padding:.35rem .9rem;border:1px solid var(--azul);
+  border-radius:20px;font-size:.9rem;
+  background:#fff;color:var(--azul);cursor:pointer;transition:.15s
+}
+.tag-btn.active,.tag-btn:hover{background:var(--azul);color:#fff}
+
+/* CARD ------------------------------------------------------------------ */
+.card{
+  background:#fff;border-radius:var(--radius);
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+  display:flex;flex-direction:column;gap:1rem;
+  padding:1.4rem;margin-bottom:2rem;
+}
+.card-content{display:flex;gap:1.4rem}
+.card img{
+  width:160px;min-width:160px;height:160px;object-fit:cover;border-radius:10px
+}
+.card h3{font-size:1.1rem;margin-bottom:.25rem}
+.card small{display:inline-flex;align-items:center;gap:.25rem;font-size:.85rem;color:#666}
+.card p{margin:.6rem 0 0;font-size:.95rem;line-height:1.4}
+
+audio{width:100%;margin-top:.8rem;border-radius:25px;background:var(--cinza-claro)}
+
+/* VER MAIS --------------------------------------------------------------- */
+.card-footer{display:flex;justify-content:flex-end;margin-top:.5rem}
+.ver-mais{
+  background:none;border:none;cursor:pointer;padding:.3rem;
+}
+.ver-mais svg{stroke:var(--azul);width:24px;height:24px}
+.ver-mais:hover svg{transform:translateX(2px);transition:.15s}
+
+/* TOOLTIPS --------------------------------------------------------------- */
+.icon-btn{
+  background:none;border:none;padding:.3rem;cursor:pointer;position:relative
+}
+.icon-btn svg{stroke:var(--azul);width:20px;height:20px}
+.icon-btn:hover::after{
+  content:attr(data-label);position:absolute;bottom:120%;left:50%;transform:translateX(-50%);
+  background:var(--azul);color:#fff;font-size:.7rem;padding:.25rem .4rem;border-radius:4px;white-space:nowrap
+}
+
+/* RESPONSIVO ------------------------------------------------------------- */
+@media(max-width:600px){
+  .card-content{flex-direction:column;align-items:center;text-align:center}
+  .card img{width:100%;height:auto}
+  .card-footer{justify-content:center}
+}
+</style>
 </head>
 <body>
-  <header>
-    <h1>🎧 Drops de Conhecimento</h1>
-  </header>
-  <div class="container">
-    <div id="lista-episodios"></div>
-  </div>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCiXyKgy5sw26JWPLZBX6SFVLbBDrLOCZw",
-      authDomain: "podcasts-faesf-72959.firebaseapp.com",
-      projectId: "podcasts-faesf-72959",
-      storageBucket: "podcasts-faesf-72959.firebasestorage.app",
-      messagingSenderId: "1097331767383",
-      appId: "1:1097331767383:web:7e4228ea735c5365cd4b12"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
 
-    async function carregarEpisodios() {
-      const lista = document.getElementById("lista-episodios");
-      const querySnapshot = await db.collection("episodios").orderBy("criadoEm", "desc").get();
-      querySnapshot.forEach((doc) => {
-        const ep = doc.data();
-        const div = document.createElement("div");
-        div.className = "episodio";
-        div.innerHTML = `
-          <div class="episodio-flex">
-            <img src="${ep.imagem}" alt="Imagem do episódio">
-            <div class="info">
-              <div class="titulo">${ep.titulo}</div>
-              <div class="data">📅 ${ep.data} | 🏷️ ${ep.tag}</div>
-              <div class="descricao">${ep.descricao}</div>
-              <audio controls src="${ep.audio}"></audio>
-            </div>
+<header>
+  <h1><i data-lucide="headphones"></i>Drops de Conhecimento</h1>
+  <p style="margin-top:.6rem;font-size:.9rem">Uma produção interna da FAESF para formação e alinhamento institucional.</p>
+</header>
+
+<main>
+  <!-- TAGS ======================== -->
+  <div class="tags" id="tagBar">
+    <!-- botões gerados no JS -->
+  </div>
+
+  <!-- LISTA DE EPISÓDIOS -->
+  <div id="episodios"></div>
+</main>
+
+<script type="module">
+/* ---------------- FIREBASE ------------------ */
+import { initializeApp }  from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCiXyKgy5sw26JWPLZBX6SFVLbBDrLOCZw",
+  authDomain: "podcasts-faesf-72959.firebaseapp.com",
+  projectId: "podcasts-faesf-72959",
+  storageBucket: "podcasts-faesf-72959.appspot.com",
+  messagingSenderId: "1097331767383",
+  appId: "1:1097331767383:web:7e4228ea735c5365cd4b12"
+};
+initializeApp(firebaseConfig);
+const db = getFirestore();
+
+/* ------------- CARREGA EPISÓDIOS ------------ */
+let todosEpisodios = [];
+let tagAtual = "Todas";
+
+async function carregar(){
+  const snap = await getDocs(collection(db,"episodios"));
+  todosEpisodios = [];
+  snap.forEach(doc => todosEpisodios.push({...doc.data(),id:doc.id}));
+  todosEpisodios.sort((a,b)=> new Date(b.data) - new Date(a.data)); // mais novo primeiro
+  renderizarTags();
+  renderizarLista();
+}
+function renderizarTags(){
+  const tags = ["Todas",...new Set(todosEpisodios.map(e=>e.tag))];
+  const barra = document.getElementById("tagBar");
+  barra.innerHTML="";
+  tags.forEach(t=>{
+    const btn=document.createElement("button");
+    btn.className="tag-btn"+(t===tagAtual?" active":"");
+    btn.textContent=t||"Sem Tag";
+    btn.onclick=()=>{tagAtual=t; renderizarTags(); renderizarLista()};
+    barra.appendChild(btn);
+  });
+}
+function renderizarLista(){
+  const box=document.getElementById("episodios"); box.innerHTML="";
+  todosEpisodios
+    .filter(e=> tagAtual==="Todas" || e.tag===tagAtual)
+    .forEach(ep=>{
+      const card=document.createElement("div"); card.className="card";
+
+      card.innerHTML=`
+        <div class="card-content">
+          <img src="${ep.imagem||''}" alt="Capa">
+          <div class="info">
+            <h3>${ep.titulo}</h3>
+            <small><i data-lucide="calendar" style="width:14px;height:14px;"></i> ${ep.data} | <i data-lucide="tag" style="width:14px;height:14px;"></i> ${ep.tag||"Sem tag"}</small>
+            <p>${ep.descricao}</p>
+            <audio controls src="${ep.audio}"></audio>
           </div>
-          <button class="ver-mais-icon" onclick="window.location.href='ep.html?id=${doc.id}'" title="Ver mais">
+        </div>
+        <div class="card-footer">
+          <button class="ver-mais icon-btn" data-label="Ver mais" onclick="location.href='ep.html?id=${ep.id}'">
             <i data-lucide="chevron-right"></i>
           </button>
-        `;
-        lista.appendChild(div);
-      });
-      lucide.createIcons();
-    }
+        </div>`;
+      box.appendChild(card);
+    });
+  lucide.createIcons();
+}
 
-    window.onload = carregarEpisodios;
-  </script>
+/* --------- INICIALIZA ---------- */
+carregar();
+</script>
 </body>
 </html>
