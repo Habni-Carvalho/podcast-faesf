@@ -149,19 +149,21 @@
         <i data-lucide="circle-plus"></i>
         Novo Episódio
       </button>
-    </div>
-
-    <div class="formulario" id="formulario" style="display: none;">
-      <input type="text" id="titulo" placeholder="Título do episódio">
-      <textarea id="descricao" placeholder="Descrição do episódio"></textarea>
-      <input type="date" id="data">
-      <input type="text" id="tag" placeholder="Tag / Playlist">
-      <input type="text" id="imagem" placeholder="Link da imagem (.jpg ou .png)">
-      <input type="text" id="audio" placeholder="Link do áudio (.mp3)">
-      <button class="btn-flutuante" onclick="salvarEpisodio()" title="Salvar">
-        <i data-lucide="save"></i>
-      </button>
-    </div>
+   
+<div class="formulario" id="formulario" style="display: none;">
+  <input type="text" id="titulo" placeholder="Título do episódio">
+  <textarea id="descricao" placeholder="Descrição do episódio"></textarea>
+  <input type="date" id="data">
+  <input type="text" id="tag" placeholder="Tag / Playlist">
+  <input type="text" id="imagem" placeholder="Link da imagem (.jpg ou .png)">
+  <input type="text" id="audio" placeholder="Link do áudio (.mp3)">
+  <div style="text-align: right;">
+    <button class="btn" onclick="salvarEpisodio()" title="Salvar">
+      <i data-lucide="save"></i>
+      Salvar
+    </button>
+  </div>
+</div>
 
     <label for="filtro">Filtrar por tag:</label>
     <select id="filtro" onchange="aplicarFiltro()">
