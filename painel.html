@@ -25,15 +25,14 @@
       max-width: 900px;
       margin: 30px auto;
       background: white;
-      border-radius: 24px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-radius: 32px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
       padding: 30px;
     }
     .formulario {
       background: #f9fafb;
       padding: 24px;
       border-radius: 20px;
-      box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
       margin-bottom: 30px;
       position: relative;
     }
@@ -47,27 +46,12 @@
       border-radius: 12px;
       font-size: 15px;
     }
-    .btn {
-      background-color: #001f36;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 15px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .btn:hover {
-      background-color: #003354;
-    }
-    .btn-icone {
+    .btn-icon {
       background: none;
       border: none;
       cursor: pointer;
     }
-    .btn-icone i {
+    .btn-icon i {
       width: 20px;
       height: 20px;
       stroke: #001f36;
@@ -80,16 +64,16 @@
     }
     .episodio {
       background: #fff;
-      border-radius: 16px;
+      border-radius: 24px;
       padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
     .episodio img {
       width: 150px;
       height: 150px;
       object-fit: cover;
-      border-radius: 12px;
+      border-radius: 16px;
       margin-right: 20px;
     }
     .episodio-flex {
@@ -115,20 +99,31 @@
     }
     .botoes-acoes {
       display: flex;
-      gap: 12px;
-      margin-bottom: 12px;
+      gap: 14px;
+      margin-top: 10px;
     }
     #filtro {
       margin-bottom: 20px;
-    }
-    i {
-      stroke: #001f36;
     }
     .topo-acoes {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 24px;
+    }
+    .novo-botao {
+      border: 1px solid #001f36;
+      background: white;
+      border-radius: 12px;
+      font-size: 15px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .novo-botao i {
+      stroke: #001f36;
     }
     @media (max-width: 600px) {
       .episodio-flex {
@@ -148,8 +143,9 @@
   <div class="container">
     <div class="topo-acoes">
       <h2>Gerenciar episódios</h2>
-      <button class="btn" onclick="mostrarFormulario()">
+      <button class="novo-botao" onclick="mostrarFormulario()">
         <i data-lucide="circle-plus"></i>
+        Novo Episódio
       </button>
     </div>
 
@@ -160,7 +156,7 @@
       <input type="text" id="tag" placeholder="Tag / Playlist">
       <input type="text" id="imagem" placeholder="Link da imagem (.jpg ou .png)">
       <input type="text" id="audio" placeholder="Link do áudio (.mp3)">
-      <button class="btn btn-flutuante" onclick="salvarEpisodio()" title="Salvar">
+      <button class="btn-flutuante" onclick="salvarEpisodio()" title="Salvar">
         <i data-lucide="save"></i>
       </button>
     </div>
@@ -287,10 +283,10 @@
             <img src="${ep.imagem}" alt="Imagem do episódio">
             <div class="conteudo">
               <div class="botoes-acoes">
-                <button class="btn-icone" onclick='mostrarFormulario(${JSON.stringify(ep)}, "${ep.id}")' title="Editar episódio">
+                <button class="btn-icon" onclick='mostrarFormulario(${JSON.stringify(ep)}, "${ep.id}")' title="Editar episódio">
                   <i data-lucide="square-pen"></i>
                 </button>
-                <button class="btn-icone" onclick='excluirEpisodio("${ep.id}")' title="Excluir episódio">
+                <button class="btn-icon" onclick='excluirEpisodio("${ep.id}")' title="Excluir episódio">
                   <i data-lucide="trash-2"></i>
                 </button>
               </div>
