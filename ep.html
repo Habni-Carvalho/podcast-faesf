@@ -4,161 +4,198 @@
   <meta charset="UTF-8" />
   <title>Drops de Conhecimento – Episódio</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-
-  <!-- Lucide (ícones em linha) -->
   <script src="https://unpkg.com/lucide@latest"></script>
-
   <style>
-    :root{
-      --azul:#001f36;
-      --cinza:#f1f1f4;
-      --cinza-card:#ffffff;
-      --borda:1px solid #e2e2e8;
-      --raio:20px;
+    :root {
+      --azul: #001f36;
+      --bg: #ebedf0;
+      --card: #fff;
+      --radius: 22px;
+      --cinza: #f6f7f9;
     }
-    *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    * { box-sizing: border-box; font-family: system-ui, Arial, sans-serif; }
 
-    body{background:#dfe0e5;margin:0}
-    header{
-      background:var(--azul);color:#fff;padding:28px 8px;
-      text-align:center;font-weight:700;font-size:clamp(18px,2.5vw,28px);
-      display:flex;justify-content:center;align-items:center;gap:8px
+    body { background: var(--bg); color: #222; margin: 0; }
+    header {
+      background: var(--azul);
+      color: #fff;
+      text-align: center;
+      padding: 2.2rem 1rem 2rem 1rem;
+      font-size: 1.6rem;
+      font-weight: 700;
+      display: flex; justify-content: center; align-items: center; gap: 0.6rem;
     }
-    header svg{stroke:#fff;width:32px;height:32px}
+    header i { stroke: #fff; width: 30px; height: 30px; }
+    .action-bar {
+      max-width: 900px;
+      margin: 2.1rem auto 2rem;
+      padding: .8rem 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--cinza);
+      border-radius: var(--radius);
+      border: 1px solid #e0e1e7;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .icon-group { display: flex; gap: .8rem; }
+    .icon-btn {
+      background: none; border: none; cursor: pointer; padding: .35rem; position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .icon-btn svg { stroke: var(--azul); width: 26px; height: 26px; }
+    .icon-btn:hover svg { opacity: .8; }
+    .icon-btn:hover::after {
+      content: attr(title); position: absolute; bottom: 115%; left: 50%; transform: translateX(-50%);
+      background: var(--azul); color: #fff; font-size: .78rem; padding: .2rem .55rem;
+      border-radius: 4px; white-space: nowrap;
+    }
 
-    /* --- barra de ação -------------------------------- */
-    .action-bar{
-      max-width:900px;
-      margin:-1.2rem auto 1.2rem;     /* puxa para perto do header */
-      padding:.8rem 1rem;             /* altura suficiente pros ícones */
-      display:flex;justify-content:space-between;align-items:center;
-      background:var(--cinza);border-radius:var(--raio);border:var(--borda);
-      z-index:5;position:relative
+    /* --- Card principal */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      max-width: 900px;
+      margin: 0 auto 3.5rem;
+      padding: 2.2rem 2.2rem 2.5rem 2.2rem;
+      box-shadow: 0 3px 18px rgba(0,0,0,0.07);
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      gap: 2.2rem;
+      align-items: start;
     }
-    .icon-group{display:flex;gap:.9rem}
-    .icon-btn{cursor:pointer;display:flex;align-items:center;justify-content:center}
-    .icon-btn svg{
-      width:26px;height:26px;stroke:var(--azul);stroke-width:2.2;
-      transition:.2s;
+    .cover {
+      width: 100%;
+      max-width: 230px;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      border-radius: 16px;
+      background: #e9e9ea;
+      box-shadow: 0 1px 6px #0001;
     }
-    .icon-btn:hover svg{opacity:.7}
+    .info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      min-width: 0;
+    }
+    .info h1 {
+      font-size: 1.45rem;
+      margin-bottom: .3rem;
+      color: var(--azul);
+      word-break: break-word;
+    }
+    .meta {
+      font-size: .95rem;
+      color: #666;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: .5rem;
+    }
+    .meta i { width: 15px; height: 15px; stroke: #b6b6b6; }
+    .player-box {
+      margin: 1rem 0 0.9rem 0;
+      padding: .8rem 1rem;
+      background: var(--cinza);
+      border-radius: 20px;
+      box-shadow: 0 1px 8px rgba(0,0,0,.03);
+    }
+    audio { width: 100%; border-radius: 18px; background: #f3f5f7;}
+    .info p { margin: 0; font-size: 1rem; color: #2c2c2c; line-height: 1.6; }
 
-    /* --- card do episódio ----------------------------- */
-    .card{
-      background:var(--cinza-card);border-radius:var(--raio);
-      border:var(--borda);max-width:900px;margin:0 auto 4rem;
-      padding:2rem;display:flex;gap:1.6rem
-    }
-    .cover{
-      flex:0 0 260px;
-      border-radius:var(--raio);object-fit:cover;width:100%;height:auto
-    }
-    .info{flex:1;display:flex;flex-direction:column;gap:.4rem}
-    h1{font-size:clamp(20px,2vw,28px);color:var(--azul);line-height:1.25}
-    .meta{font-size:.9rem;color:#555;display:flex;gap:.5rem;align-items:center}
-    .meta svg{width:15px;height:15px;stroke:#999}
-    p.desc{margin-top:.5rem;font-size:1rem;line-height:1.45;color:#333}
-
-    audio{width:100%;margin-top:1.4rem;border-radius:50px}
-
-    /* --- responsivo ----------------------------------- */
-    @media(max-width:720px){
-      .card{flex-direction:column;align-items:center;text-align:center}
-      .cover{width:100%;max-width:320px}
-      .info{align-items:center}
+    @media (max-width: 730px) {
+      .card {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 1.2rem;
+      }
+      .cover {
+        margin: 0 auto 1.3rem auto;
+        width: 75vw;
+        min-width: 0; max-width: 280px;
+      }
+      .meta, .info h1 { justify-content: center; }
+      .player-box { padding: .6rem .2rem; }
     }
   </style>
 </head>
 <body>
 
-  <!-- cabeçalho -->
-  <header>
-    <i data-lucide="headphones"></i>
-    Drops de Conhecimento
-  </header>
+<header>
+  <i data-lucide="headphones"></i>
+  Drops de Conhecimento
+</header>
 
-  <!-- barra de ação -->
-  <div class="action-bar">
-    <div class="icon-group">
-      <span class="icon-btn" id="btnVoltar" title="Voltar">
-        <i data-lucide="chevron-left"></i>
-      </span>
-    </div>
-    <div class="icon-group">
-      <span class="icon-btn" id="btnWhats" title="Compartilhar no WhatsApp">
-        <i data-lucide="message-circle-more"></i>
-      </span>
-      <span class="icon-btn" id="btnCopy" title="Copiar link">
-        <i data-lucide="copy"></i>
-      </span>
-    </div>
+<div class="action-bar">
+  <span class="icon-btn" id="btnVoltar" title="Voltar">
+    <i data-lucide="chevron-left"></i>
+  </span>
+  <div class="icon-group">
+    <span class="icon-btn" id="btnWhats" title="Compartilhar no WhatsApp">
+      <i data-lucide="message-circle-more"></i>
+    </span>
+    <span class="icon-btn" id="btnCopy" title="Copiar link">
+      <i data-lucide="copy"></i>
+    </span>
   </div>
+</div>
 
-  <!-- card do episódio (preenchido via JS) -->
-  <div class="card" id="episodio">
-    <img class="cover" src="" alt="Imagem do episódio" />
+<div class="card" id="card">
+  <!-- Preenchido via JS -->
+</div>
+
+<script type="module">
+import { initializeApp }  from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCiXyKgy5sw26JWPLZBX6SFVLbBDrLOCZw",
+  authDomain: "podcasts-faesf-72959.firebaseapp.com",
+  projectId: "podcasts-faesf-72959",
+  storageBucket: "podcasts-faesf-72959.appspot.com",
+  messagingSenderId: "1097331767383",
+  appId: "1:1097331767383:web:7e4228ea735c5365cd4b12"
+};
+const app   = initializeApp(firebaseConfig);
+const db    = getFirestore(app);
+
+const fmt = iso => new Date(iso).toLocaleDateString("pt-BR",{timeZone:"UTC"});
+
+async function carregar(){
+  const id = new URLSearchParams(location.search).get("id");
+  if(!id){location.href="index.html";return;}
+
+  const snap = await getDoc(doc(db,"episodios",id));
+  if(!snap.exists()){alert("Episódio não encontrado");return;}
+  const ep = snap.data();
+
+  document.getElementById("card").innerHTML = `
+    <img class="cover" src="${ep.imagem||''}" alt="Imagem do episódio">
     <div class="info">
-      <h1 id="titulo"></h1>
+      <h1>${ep.titulo}</h1>
       <div class="meta">
-        <i data-lucide="calendar"></i><span id="data"></span>
-        <i data-lucide="tag"></i><span id="tag"></span>
+        <i data-lucide="calendar"></i> ${fmt(ep.data)} 
+        <i data-lucide="tag"></i> ${ep.tag||"Sem tag"}
       </div>
-      <p class="desc" id="descricao"></p>
-      <audio controls id="player"></audio>
+      <div class="player-box"><audio controls src="${ep.audio}"></audio></div>
+      <p>${ep.descricao}</p>
     </div>
-  </div>
+  `;
 
-  <!-- Firebase + lógica -->
-  <script type="module">
-    import { initializeApp }      from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+  // ações:
+  const link = location.href;
+  document.getElementById("btnVoltar").onclick = () => history.back();
+  document.getElementById("btnCopy").onclick   = () => {
+    navigator.clipboard.writeText(link); alert("Link copiado!");
+  };
+  document.getElementById("btnWhats").onclick  = () => {
+    const msg = encodeURIComponent(`🎧 ${ep.titulo}\n${link}`);
+    window.open(`https://wa.me/?text=${msg}`,"_blank");
+  };
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCiXyKgy5sw26JWPLZBX6SFVLbBDrLOCZw",
-      authDomain: "podcasts-faesf-72959.firebaseapp.com",
-      projectId: "podcasts-faesf-72959",
-      storageBucket: "podcasts-faesf-72959.appspot.com",
-      messagingSenderId: "1097331767383",
-      appId: "1:1097331767383:web:7e4228ea735c5365cd4b12"
-    };
-    const app   = initializeApp(firebaseConfig);
-    const db    = getFirestore(app);
-
-    // helper: formata data pt-BR
-    const fmt = iso => new Date(iso).toLocaleDateString("pt-BR",{timeZone:"UTC"});
-
-    async function carregar(){
-      const id = new URLSearchParams(location.search).get("id");
-      if(!id){location.href="index.html";return;}
-
-      const snap = await getDoc( doc(db,"episodios",id) );
-      if(!snap.exists()){alert("Episódio não encontrado");return;}
-      const ep = snap.data();
-
-      document.querySelector(".cover").src          = ep.imagem;
-      document.getElementById("titulo").textContent = ep.titulo;
-      document.getElementById("data").textContent   = fmt(ep.data);
-      document.getElementById("tag").textContent    = ep.tag;
-      document.getElementById("descricao").textContent = ep.descricao;
-      document.getElementById("player").src         = ep.audio;
-
-      // acções:
-      const linkPag   = location.href;
-      document.getElementById("btnVoltar").onclick = () => history.back();
-      document.getElementById("btnCopy").onclick   = () =>{
-        navigator.clipboard.writeText(linkPag);
-        alert("Link copiado!");
-      };
-      document.getElementById("btnWhats").onclick  = () =>{
-        const msg = encodeURIComponent(`🎧 ${ep.titulo}\n${linkPag}`);
-        window.open(`https://wa.me/?text=${msg}`,"_blank");
-      };
-    }
-
-    carregar();
-  </script>
-
-  <!-- ativa os ícones Lucide -->
-  <script>lucide.createIcons();</script>
+  lucide.createIcons();
+}
+carregar();
+</script>
+<script>lucide.createIcons();</script>
 </body>
 </html>
