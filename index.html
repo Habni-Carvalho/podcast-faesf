@@ -2,17 +2,16 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Drops de Conhecimento | FAESF</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Podcast FAESF</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    * { box-sizing: border-box; }
     body {
-      font-family: "Segoe UI", sans-serif;
-      background-color: #f9f9f9;
       margin: 0;
-      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #ebedf0;
       color: #333;
     }
     header {
@@ -21,116 +20,81 @@
       padding: 40px 20px;
       text-align: center;
     }
-    header h1 { margin: 0; font-size: 28px; }
-    header p { margin-top: 10px; font-weight: 300; }
-    .container { max-width: 900px; margin: auto; padding: 20px; }
-    .descricao-site {
-      margin-bottom: 30px;
-      background: white;
+    header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-    }
-    .tags-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 25px;
-    }
-    .tag-button {
-      padding: 8px 16px;
-      background-color: #e3ecf7;
-      color: #1d4e89;
-      border: none;
-      border-radius: 20px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    .tag-button:hover, .tag-button.active {
-      background-color: #1d4e89;
-      color: white;
     }
     .episodio {
       background: white;
-      margin-bottom: 25px;
+      border-radius: 24px;
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
-      display: flex;
-      flex-direction: row;
-      gap: 20px;
-      align-items: flex-start;
-    }
-    .episodio img {
-      width: 160px;
-      height: 160px;
-      object-fit: cover;
-      border-radius: 8px;
-      flex-shrink: 0;
-      cursor: pointer;
-    }
-    .episodio .info {
-      flex: 1;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
       position: relative;
     }
-    .episodio .titulo {
+    .episodio-flex {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .episodio img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 16px;
+    }
+    .info {
+      flex: 1;
+    }
+    .info .titulo {
       font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 5px;
+      font-weight: bold;
     }
-    .episodio .titulo a {
-      text-decoration: none;
-      color: inherit;
-    }
-    .episodio .data, .episodio .tag {
+    .info .data {
       font-size: 13px;
-      color: #888;
-      margin-bottom: 8px;
-    }
-    .episodio p { margin: 10px 0; font-size: 15px; }
-    .icone-vermais {
-      font-size: 16px;
-      margin-right: 8px;
-      color: #001f36;
-      text-decoration: none;
-      vertical-align: middle;
-    }
-    .icone-vermais:hover {
-      text-decoration: underline;
-    }
-    audio { width: 100%; margin-top: 10px; }
-    #ver-mais-btn {
-      padding: 6px 12px;
-      background-color: transparent;
-      border: none;
-      color: #2e5c9a;
-      cursor: pointer;
-      font-size: 14px;
+      color: #777;
       margin-top: 5px;
     }
+    .info .descricao {
+      margin: 10px 0;
+    }
+    .ver-mais-icon {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .ver-mais-icon i {
+      width: 20px;
+      height: 20px;
+      stroke: #001f36;
+    }
     @media (max-width: 600px) {
-      .episodio { flex-direction: column; align-items: center; }
-      .episodio img { width: 100%; height: auto; }
+      .episodio-flex {
+        flex-direction: column;
+        align-items: center;
+      }
+      .episodio img {
+        margin: 0 auto;
+      }
     }
   </style>
 </head>
 <body>
   <header>
     <h1>🎧 Drops de Conhecimento</h1>
-    <p>Uma produção interna da FAESF para formação e alinhamento institucional.</p>
   </header>
   <div class="container">
-    <div class="descricao-site">
-      <h2>Sobre o podcast</h2>
-      <p>Este canal é voltado aos colaboradores, professores, coordenadores e equipe técnica da FAESF. Aqui, compartilhamos conteúdos que fortalecem a identidade institucional, a formação continuada e a comunicação estratégica.</p>
-    </div>
-    <div class="tags-container" id="tags">
-      <button class="tag-button" onclick="window.location.href='index.html'">Ver todos</button>
-    </div>
-    <div id="episodios"></div>
+    <div id="lista-episodios"></div>
   </div>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCiXyKgy5sw26JWPLZBX6SFVLbBDrLOCZw",
@@ -140,95 +104,33 @@
       messagingSenderId: "1097331767383",
       appId: "1:1097331767383:web:7e4228ea735c5365cd4b12"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    let todosEpisodios = [];
 
     async function carregarEpisodios() {
-      const tagURL = new URLSearchParams(window.location.search).get("tag");
-      const container = document.getElementById("episodios");
-      const tagsBox = document.getElementById("tags");
-      container.innerHTML = "";
-      tagsBox.innerHTML = "<button class='tag-button' onclick=\"window.location.href='index.html'\">Ver todos</button>";
-      todosEpisodios = [];
-
-      const querySnapshot = await db.collection("episodios").get();
-      const tagsSet = new Set();
-
+      const lista = document.getElementById("lista-episodios");
+      const querySnapshot = await db.collection("episodios").orderBy("criadoEm", "desc").get();
       querySnapshot.forEach((doc) => {
         const ep = doc.data();
-        todosEpisodios.push({ ...ep, id: doc.id, criadoEm: ep.criadoEm?.toDate?.() || new Date(0) });
-        if (ep.tag) tagsSet.add(ep.tag);
-      });
-
-      todosEpisodios.sort((a, b) => b.criadoEm - a.criadoEm);
-
-      const tagsArray = [...tagsSet].sort();
-      const limite = 4;
-      tagsArray.forEach((tag, index) => {
-        const btn = document.createElement("button");
-        btn.className = "tag-button" + (tag === tagURL ? " active" : "");
-        btn.textContent = tag;
-        btn.onclick = () => {
-          window.location.href = `?tag=${encodeURIComponent(tag)}`;
-        };
-        if (index < limite) {
-          tagsBox.appendChild(btn);
-        } else {
-          btn.style.display = "none";
-          btn.classList.add("extra-tag");
-          tagsBox.appendChild(btn);
-        }
-      });
-
-      if (tagsArray.length > limite) {
-        const verMais = document.createElement("button");
-        verMais.id = "ver-mais-btn";
-        verMais.textContent = "+ Todas as playlists";
-        verMais.onclick = () => {
-          document.querySelectorAll(".extra-tag").forEach(el => el.style.display = "inline-block");
-          verMais.style.display = "none";
-        };
-        tagsBox.appendChild(verMais);
-      }
-
-      const filtrados = tagURL && tagURL !== "todos"
-        ? todosEpisodios.filter(ep => ep.tag === tagURL)
-        : todosEpisodios;
-
-      exibirEpisodios(filtrados);
-    }
-
-    function formatarDataBrasileira(dataISO) {
-      if (!dataISO) return "";
-      const [ano, mes, dia] = dataISO.split("-");
-      return `${dia}/${mes}/${ano}`;
-    }
-
-    function exibirEpisodios(lista) {
-      const container = document.getElementById("episodios");
-      container.innerHTML = "";
-
-      lista.forEach((ep) => {
         const div = document.createElement("div");
         div.className = "episodio";
         div.innerHTML = `
-          <img src="${ep.imagem}" alt="Imagem do episódio" onclick="location.href='ep.html?id=${ep.id}'" title="Ver episódio completo">
-          <div class="info">
-            <div class="titulo">
-              <a href="ep.html?id=${ep.id}" title="Ver episódio completo">
-                🔎 ${ep.titulo}
-              </a>
+          <div class="episodio-flex">
+            <img src="${ep.imagem}" alt="Imagem do episódio">
+            <div class="info">
+              <div class="titulo">${ep.titulo}</div>
+              <div class="data">📅 ${ep.data} | 🏷️ ${ep.tag}</div>
+              <div class="descricao">${ep.descricao}</div>
+              <audio controls src="${ep.audio}"></audio>
             </div>
-            <div class="data">Data: ${formatarDataBrasileira(ep.data)}</div>
-            <div class="tag">Playlist: ${ep.tag}</div>
-            <p>${ep.descricao}</p>
-            <audio controls src="${ep.audio}"></audio>
           </div>
+          <button class="ver-mais-icon" onclick="window.location.href='ep.html?id=${doc.id}'" title="Ver mais">
+            <i data-lucide="chevron-right"></i>
+          </button>
         `;
-        container.appendChild(div);
+        lista.appendChild(div);
       });
+      lucide.createIcons();
     }
 
     window.onload = carregarEpisodios;
