@@ -6,271 +6,93 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    :root {
-      --azul: #001f36;
-      --cinza: #ebedf0;
-      --card: #fff;
-      --radius: 32px;
+    :root { --azul: #001f36; --cinza: #ebedf0; --card: #fff; --radius: 32px; }
+    body { font-family: "Segoe UI", Arial, sans-serif; margin: 0; background: var(--cinza); color: #232528; min-height: 100vh; }
+    header { background: var(--azul); color: #fff; padding: 2.3rem 1rem 2rem 1rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: .7rem; font-size: 1.5rem; font-weight: 700;}
+    header svg { stroke: #fff; width: 29px; height: 29px; }
+    .container { max-width: 940px; margin: 36px auto 20px auto; background: var(--card); border-radius: var(--radius); box-shadow: 0 6px 28px rgba(0,0,0,.11); padding: 34px 28px 30px 28px;}
+    .login-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 330px;}
+    .login-btn {
+      background: var(--azul); color: #fff; font-size: 1.1rem;
+      border: none; border-radius: 13px; padding: 1rem 2.3rem;
+      display: flex; align-items: center; gap: 10px; cursor: pointer;
+      margin-top: 2rem; box-shadow: 0 2px 10px #001f3621; transition: background .18s;
     }
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      margin: 0;
-      background: var(--cinza);
-      color: #222;
-      min-height: 100vh;
+    .login-btn:hover { background: #163454; }
+    .login-btn i { stroke: #fff;}
+    .msg-erro {
+      color: #b60025; background: #fff4f6;
+      padding: .7rem 1.4rem; border-radius: 10px;
+      margin: 1.5rem 0 0 0; font-size: 1.08rem;
+      text-align: center; border: 1px solid #eabfc9;
     }
-    header {
-      background: var(--azul);
-      color: white;
-      padding: 2.3rem 1rem 2rem 1rem;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: .6rem;
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
-    header svg { stroke: #fff; width: 28px; height: 28px; }
-
-    .container {
-      max-width: 940px;
-      margin: 32px auto 20px auto;
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: 0 6px 26px rgba(0,0,0,.11);
-      padding: 30px 28px 34px 28px;
-    }
-    .topo-acoes {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 32px;
-      gap: 1.5rem;
-    }
-    .voltar-home {
-      background: none; border: 1.5px solid var(--azul); color: var(--azul);
-      border-radius: 10px; font-size: 1rem; padding: 7px 18px 7px 14px;
-      display: flex; align-items: center; gap: 7px; cursor: pointer;
-      transition: background .15s, color .15s;
-    }
-    .voltar-home:hover {
-      background: var(--azul); color: #fff;
-    }
-    .voltar-home i { stroke: currentColor; width: 21px; height: 21px; }
-
-    .novo-botao {
-      border: 1.5px solid var(--azul);
-      background: white;
-      border-radius: 12px;
-      font-size: 1.08rem;
-      padding: 8px 17px;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      cursor: pointer;
-      font-weight: 600;
-      color: var(--azul);
-      transition: background .13s, color .13s;
-    }
+    .container .hide { display: none !important; }
+    /* --- (O RESTANTE DO CSS DO SEU PAINEL REFINADO VAI AQUI!) --- */
+    .topo-acoes { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; gap: 1.5rem;}
+    .novo-botao { border: 1.5px solid var(--azul); background: white; border-radius: 12px; font-size: 1.08rem; padding: 8px 17px; display: flex; align-items: center; gap: 9px; cursor: pointer; font-weight: 600; color: var(--azul); transition: background .13s, color .13s;}
     .novo-botao i { stroke: var(--azul); }
     .novo-botao:hover { background: var(--azul); color: #fff; }
     .novo-botao:hover i { stroke: #fff; }
-
-    /* TAGS */
     .tags { display: flex; flex-wrap: wrap; gap: .7rem; margin-bottom: 2.2rem;}
-    .tag-btn {
-      padding: .35rem 1.2rem;
-      border: 1.4px solid var(--azul);
-      border-radius: 18px;
-      background: #f6f7f9;
-      color: var(--azul);
-      cursor: pointer;
-      font-size: .97rem;
-      font-weight: 500;
-      box-shadow: 0 1px 3px #001f3622;
-      transition: background .13s;
-    }
-    .tag-btn.active,
-    .tag-btn:hover {
-      background: var(--azul);
-      color: #fff;
-    }
-
-    /* FORMULÁRIO */
-    .formulario {
-      background: #f9fafb;
-      padding: 23px 18px 28px 18px;
-      border-radius: 20px;
-      margin-bottom: 30px;
-      position: relative;
-    }
-    .formulario input, .formulario textarea, .formulario select {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border: 1px solid #d1d5db;
-      border-radius: 11px;
-      font-size: 15px;
-    }
-    .formulario input:focus, .formulario textarea:focus {
-      border-color: var(--azul);
-      outline: 1.5px solid var(--azul);
-    }
-    .formulario .btn-salvar {
-      float: right;
-      margin-top: 8px;
-    }
-    .formulario .btn-salvar button {
-      border: 1.5px solid var(--azul);
-      background: none;
-      color: var(--azul);
-      padding: 10px 22px;
-      font-size: 1.08rem;
-      border-radius: 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background .13s, color .13s;
-    }
+    .tag-btn { padding: .38rem 1.3rem; border: 1.3px solid var(--azul); border-radius: 17px; background: #f6f7f9; color: var(--azul); cursor: pointer; font-size: .99rem; font-weight: 500; box-shadow: 0 1px 3px #001f3622; transition: background .13s;}
+    .tag-btn.active,.tag-btn:hover { background: var(--azul); color: #fff; }
+    .formulario { background: #f9fafb; padding: 23px 18px 28px 18px; border-radius: 20px; margin-bottom: 30px; position: relative; }
+    .formulario input, .formulario textarea, .formulario select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #d1d5db; border-radius: 11px; font-size: 15px;}
+    .formulario .btn-salvar { float: right; margin-top: 8px;}
+    .formulario .btn-salvar button { border: 1.5px solid var(--azul); background: none; color: var(--azul); padding: 10px 22px; font-size: 1.08rem; border-radius: 12px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; transition: background .13s, color .13s;}
     .formulario .btn-salvar button i { stroke: var(--azul); }
-    .formulario .btn-salvar button:hover {
-      background: var(--azul);
-      color: #fff;
-    }
-    .formulario .btn-salvar button:hover i { stroke: #fff; }
-
-    /* EMPTY STATE */
-    .empty-state {
-      text-align: center;
-      color: #8c8d90;
-      margin: 2.5rem 0 2rem 0;
-      font-size: 1.2rem;
-      font-weight: 500;
-    }
+    .formulario .btn-salvar button:hover { background: var(--azul); color: #fff;}
+    .formulario .btn-salvar button:hover i { stroke: #fff;}
+    .empty-state { text-align: center; color: #8c8d90; margin: 2.5rem 0 2rem 0; font-size: 1.2rem; font-weight: 500;}
     .empty-state img { width: 88px; opacity: .16; display: block; margin: .7rem auto 0 auto; }
-
-    /* CARD EPISÓDIO */
-    .episodio {
-      background: #fff;
-      border-radius: 24px;
-      padding: 20px 20px 24px 20px;
-      margin-bottom: 38px;
-      box-shadow: 0 2px 9px #001f360e;
-      position: relative;
-      transition: box-shadow .12s;
-    }
-    .episodio:hover { box-shadow: 0 4px 16px #001f3617; }
-    .epa {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .conteudo-flex {
-      display: flex;
-      flex: 1;
-      gap: 20px;
-    }
-    .conteudo img {
-      width: 150px;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 16px;
-      box-shadow: 0 2px 6px #001f3620;
-    }
+    .episodio { background: #fff; border-radius: 24px; padding: 20px 20px 24px 20px; margin-bottom: 38px; box-shadow: 0 2px 9px #001f360e; position: relative; transition: box-shadow .12s;}
+    .epa { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap;}
+    .conteudo-flex { display: flex; flex: 1; gap: 20px; }
+    .conteudo img { width: 150px; height: 150px; object-fit: cover; border-radius: 16px; box-shadow: 0 2px 6px #001f3620; }
     .conteudo-texto { flex: 1; min-width:0; }
-    .titulo {
-      font-size: 1.12rem;
-      font-weight: bold;
-      margin-bottom: .15rem;
-      color: var(--azul);
-      line-height: 1.28;
-    }
-    .data {
-      font-size: .97rem;
-      color: #777;
-      margin-top: 4px;
-      margin-bottom: 9px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .data i { width: 16px; height: 16px; stroke: #b5b5b5; }
-    .badge {
-      background: #f6f8fa;
-      color: #19598a;
-      border-radius: 10px;
-      font-size: .93rem;
-      padding: 2.5px 10px;
-      margin-left: 4px;
-      border: 1px solid #d4e1ef;
-      display: inline-block;
-    }
-    .descricao {
-      margin: 0 0 10px 0;
-      font-size: .97rem;
-      line-height: 1.45;
-      color: #252525;
-    }
+    .titulo { font-size: 1.12rem; font-weight: bold; margin-bottom: .15rem; color: var(--azul); line-height: 1.28;}
+    .data { font-size: .97rem; color: #777; margin-top: 4px; margin-bottom: 9px; display: flex; align-items: center; gap: 10px;}
+    .data i { width: 16px; height: 16px; stroke: #b5b5b5;}
+    .badge { background: #f6f8fa; color: #19598a; border-radius: 10px; font-size: .93rem; padding: 2.5px 10px; margin-left: 4px; border: 1px solid #d4e1ef; display: inline-block;}
+    .descricao { margin: 0 0 10px 0; font-size: .97rem; line-height: 1.45; color: #252525;}
     audio { width: 100%; border-radius: 18px; background: #f3f5f7;}
-    .icones-laterais {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      align-items: flex-end;
-      margin-left: 16px;
-      margin-top: 12px;
-    }
-    .btn-icon {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: .24rem;
-      border-radius: 8px;
-      transition: background .12s;
-      outline: none;
-    }
-    .btn-icon i {
-      width: 23px;
-      height: 23px;
-      stroke: var(--azul);
-      transition: stroke .15s;
-    }
-    .btn-icon:hover { background: #f1f5fa; }
-    .btn-icon:focus { background: #e3e9f4; }
-    .btn-icon:focus i, .btn-icon:hover i { stroke: #2564b3; }
-
-    /* FOOTER */
-    footer {
-      margin: 1.7rem auto 0 auto;
-      padding: 2rem 0 .7rem 0;
-      text-align: center;
-      color: #99a3b3;
-      font-size: .93rem;
-      opacity: .9;
-    }
-
+    .icones-laterais { display: flex; flex-direction: column; gap: 16px; align-items: flex-end; margin-left: 16px; margin-top: 12px;}
+    .btn-icon { background: none; border: none; cursor: pointer; padding: .24rem; border-radius: 8px; transition: background .12s; outline: none;}
+    .btn-icon i { width: 23px; height: 23px; stroke: var(--azul); transition: stroke .15s;}
+    .btn-icon:hover { background: #f1f5fa;}
+    .btn-icon:focus { background: #e3e9f4;}
+    .btn-icon:focus i, .btn-icon:hover i { stroke: #2564b3;}
     @media (max-width: 720px) {
       .container { padding: 1rem 2vw; }
       .epa, .conteudo-flex { flex-direction: column; align-items: center; }
-      .conteudo img { width: 100%; height: auto; max-width: 290px; }
-      .icones-laterais { flex-direction: row; margin-left: 0; gap: 20px; }
+      .conteudo img { width: 100%; height: auto; max-width: 290px;}
+      .icones-laterais { flex-direction: row; margin-left: 0; gap: 20px;}
     }
   </style>
 </head>
 <body>
 <header>
-  <i data-lucide="headphones"></i> Drops de Conhecimento
+  <i data-lucide="headphones"></i>
+  Drops de Conhecimento
 </header>
-<div class="container">
-  <div class="topo-acoes">
-    <button class="voltar-home" onclick="window.location.href='index.html'" title="Voltar para Home" tabindex="1">
-      <i data-lucide="chevron-left"></i> Página Pública
+<div class="container" id="tela-login">
+  <div class="login-box">
+    <h2 style="font-weight:500;margin-bottom:1.6rem;color:var(--azul)">Acesso restrito</h2>
+    <button class="login-btn" onclick="loginGoogle()">
+      <i data-lucide="log-in"></i> Entrar com Google
     </button>
+    <div class="msg-erro" id="msgErro" style="display:none"></div>
+    <div style="margin-top:2.2rem;color:#666;font-size:.98rem;opacity:.77">
+      Somente administradores podem acessar este painel.
+    </div>
+  </div>
+</div>
+
+<div class="container hide" id="tela-painel">
+  <div class="topo-acoes">
     <button class="novo-botao" onclick="mostrarFormulario()" title="Novo episódio" tabindex="2">
       <i data-lucide="circle-plus"></i> Novo Episódio
     </button>
@@ -297,10 +119,11 @@
   </div>
   <div id="toast" style="display:none;position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--azul);color:#fff;padding:.75rem 1.7rem;border-radius:13px;font-size:1rem;box-shadow:0 2px 8px #001f3645;z-index:1001"></div>
 </div>
-<footer>
-  Painel Podcast FAESF &middot; Desenvolvido internamente &copy; 2024<br>
-</footer>
 <script>
+const ADMINS = [
+  "hpc@faesf.com.br"
+];
+// -- Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyCiXyKgy5sw26JWPLZBX6SFVLbBDrLOCZw",
   authDomain: "podcasts-faesf-72959.firebaseapp.com",
@@ -311,6 +134,25 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const auth = firebase.auth();
+
+function loginGoogle(){
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(erro=> alert('Erro no login Google: '+erro.message));
+}
+auth.onAuthStateChanged(user=>{
+  if(user && ADMINS.includes(user.email)){
+    document.getElementById("tela-login").classList.add("hide");
+    document.getElementById("tela-painel").classList.remove("hide");
+    carregarEpisodios();
+  } else if(user) {
+    document.getElementById("msgErro").style.display = "block";
+    document.getElementById("msgErro").textContent = "Acesso negado. E-mail não autorizado.";
+    auth.signOut();
+  }
+});
+
+/* ---------- resto do código do painel (igual à versão refinada) --------- */
 let todos = [], editandoId = null, tagAtual = "Todas";
 
 function mostrarFormulario(ep = null, id = null) {
@@ -435,9 +277,6 @@ function renderizarLista(){
   });
   lucide.createIcons();
 }
-function aplicarFiltro() {
-  renderizarLista();
-}
 function carregarEpisodios() {
   db.collection("episodios").orderBy("criadoEm", "desc").get().then((querySnapshot) => {
     todos = [];
@@ -450,7 +289,6 @@ function carregarEpisodios() {
     renderizarLista();
   });
 }
-window.onload = carregarEpisodios;
 </script>
 <script>lucide.createIcons();</script>
 </body>
