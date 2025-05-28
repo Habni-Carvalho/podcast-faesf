@@ -68,6 +68,7 @@
       padding: 20px;
       margin-bottom: 20px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      position: relative;
     }
     .episodio img {
       width: 150px;
@@ -97,10 +98,13 @@
     .conteudo .descricao {
       margin: 10px 0;
     }
-    .botoes-acoes {
+    .icones-laterais {
+      position: absolute;
+      right: 20px;
+      top: 20px;
       display: flex;
-      gap: 14px;
-      margin-top: 10px;
+      flex-direction: column;
+      gap: 12px;
     }
     #filtro {
       margin-bottom: 20px;
@@ -282,7 +286,7 @@
           <div class="episodio-flex">
             <img src="${ep.imagem}" alt="Imagem do episódio">
             <div class="conteudo">
-              <div class="botoes-acoes">
+              <div class="icones-laterais">
                 <button class="btn-icon" onclick='mostrarFormulario(${JSON.stringify(ep)}, "${ep.id}")' title="Editar episódio">
                   <i data-lucide="square-pen"></i>
                 </button>
