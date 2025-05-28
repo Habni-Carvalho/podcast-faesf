@@ -12,7 +12,7 @@
       font-family: "Segoe UI", sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #e9ecf1;
+      background-color: #ebedf0;
       color: #333;
     }
     header {
@@ -25,35 +25,36 @@
       max-width: 900px;
       margin: 30px auto;
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border-radius: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       padding: 30px;
     }
     .formulario {
-      background: #f8f9fa;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      background: #f9fafb;
+      padding: 24px;
+      border-radius: 20px;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
       margin-bottom: 30px;
+      position: relative;
     }
     .formulario input,
     .formulario textarea,
     .formulario select {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 15px;
     }
     .btn {
       background-color: #001f36;
       color: white;
       padding: 10px 20px;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 15px;
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -61,22 +62,34 @@
     .btn:hover {
       background-color: #003354;
     }
-    .btn-small {
-      padding: 6px 10px;
-      font-size: 13px;
+    .btn-icone {
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-icone i {
+      width: 20px;
+      height: 20px;
+      stroke: #001f36;
+    }
+    .btn-flutuante {
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      background: none;
     }
     .episodio {
       background: #fff;
-      border-radius: 10px;
+      border-radius: 16px;
       padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
     .episodio img {
       width: 150px;
       height: 150px;
       object-fit: cover;
-      border-radius: 10px;
+      border-radius: 12px;
       margin-right: 20px;
     }
     .episodio-flex {
@@ -102,11 +115,20 @@
     }
     .botoes-acoes {
       display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    #filtro {
+      margin-bottom: 20px;
     }
     i {
-      color: #001f36;
+      stroke: #001f36;
+    }
+    .topo-acoes {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
     }
     @media (max-width: 600px) {
       .episodio-flex {
@@ -126,7 +148,9 @@
   <div class="container">
     <div class="topo-acoes">
       <h2>Gerenciar episódios</h2>
-      <button class="btn" onclick="mostrarFormulario()"><i data-lucide="circle-plus"></i> Novo Episódio</button>
+      <button class="btn" onclick="mostrarFormulario()">
+        <i data-lucide="circle-plus"></i>
+      </button>
     </div>
 
     <div class="formulario" id="formulario" style="display: none;">
@@ -136,7 +160,9 @@
       <input type="text" id="tag" placeholder="Tag / Playlist">
       <input type="text" id="imagem" placeholder="Link da imagem (.jpg ou .png)">
       <input type="text" id="audio" placeholder="Link do áudio (.mp3)">
-      <button class="btn" onclick="salvarEpisodio()"><i data-lucide="save"></i> Salvar</button>
+      <button class="btn btn-flutuante" onclick="salvarEpisodio()" title="Salvar">
+        <i data-lucide="save"></i>
+      </button>
     </div>
 
     <label for="filtro">Filtrar por tag:</label>
@@ -261,8 +287,12 @@
             <img src="${ep.imagem}" alt="Imagem do episódio">
             <div class="conteudo">
               <div class="botoes-acoes">
-                <button class="btn btn-small" onclick='mostrarFormulario(${JSON.stringify(ep)}, "${ep.id}")'><i data-lucide="square-pen"></i></button>
-                <button class="btn btn-small" onclick='excluirEpisodio("${ep.id}")'><i data-lucide="trash-2"></i></button>
+                <button class="btn-icone" onclick='mostrarFormulario(${JSON.stringify(ep)}, "${ep.id}")' title="Editar episódio">
+                  <i data-lucide="square-pen"></i>
+                </button>
+                <button class="btn-icone" onclick='excluirEpisodio("${ep.id}")' title="Excluir episódio">
+                  <i data-lucide="trash-2"></i>
+                </button>
               </div>
               <div class="titulo">${ep.titulo}</div>
               <div class="data">📅 ${ep.data} | 🏷️ ${ep.tag}</div>
