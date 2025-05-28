@@ -1,153 +1,164 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1.0" />
-<title>Episódio | Drops de Conhecimento</title>
+  <meta charset="UTF-8" />
+  <title>Drops de Conhecimento – Episódio</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-<!-- Lucide  -->
-<script defer src="https://unpkg.com/lucide@latest"></script>
+  <!-- Lucide (ícones em linha) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-<style>
-:root{
-  --azul:#001f36;
-  --cinza:#f1f1f4;
-  --bg:#e6e7ea;
-  --radius:1.6rem;
-  font-size:16px;
-}
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Segoe UI,system-ui,sans-serif;}
+  <style>
+    :root{
+      --azul:#001f36;
+      --cinza:#f1f1f4;
+      --cinza-card:#ffffff;
+      --borda:1px solid #e2e2e8;
+      --raio:20px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 
-body{background:var(--bg);color:#222}
+    body{background:#dfe0e5;margin:0}
+    header{
+      background:var(--azul);color:#fff;padding:28px 8px;
+      text-align:center;font-weight:700;font-size:clamp(18px,2.5vw,28px);
+      display:flex;justify-content:center;align-items:center;gap:8px
+    }
+    header svg{stroke:#fff;width:32px;height:32px}
 
-/* cabeçalho */
-header{background:var(--azul);color:#fff;padding:2rem 1rem;text-align:center}
-header h1{display:flex;justify-content:center;align-items:center;gap:.5rem;font-size:1.6rem;font-weight:700}
-header svg{stroke:#fff;width:26px;height:26px}
+    /* --- barra de ação -------------------------------- */
+    .action-bar{
+      max-width:900px;
+      margin:-1.2rem auto 1.2rem;     /* puxa para perto do header */
+      padding:.8rem 1rem;             /* altura suficiente pros ícones */
+      display:flex;justify-content:space-between;align-items:center;
+      background:var(--cinza);border-radius:var(--raio);border:var(--borda);
+      z-index:5;position:relative
+    }
+    .icon-group{display:flex;gap:.9rem}
+    .icon-btn{cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .icon-btn svg{
+      width:26px;height:26px;stroke:var(--azul);stroke-width:2.2;
+      transition:.2s;
+    }
+    .icon-btn:hover svg{opacity:.7}
 
-/* barra de ação --------------------- */
-.action-bar{
-  max-width:900px;margin:-1.5rem auto 1rem;
-  padding:.5rem 1rem;display:flex;justify-content:space-between;align-items:center
-}
-.icon-btn{
-  background:none;border:none;padding:.35rem;cursor:pointer;position:relative
-}
-.icon-btn svg{stroke:var(--azul);width:24px;height:24px}
-.icon-btn:hover::after{
-  content:attr(data-label);position:absolute;bottom:110%;left:50%;transform:translateX(-50%);
-  font-size:.75rem;background:var(--azul);color:#fff;padding:.25rem .5rem;border-radius:4px;white-space:nowrap
-}
-.icon-group{display:flex;gap:.6rem}
+    /* --- card do episódio ----------------------------- */
+    .card{
+      background:var(--cinza-card);border-radius:var(--raio);
+      border:var(--borda);max-width:900px;margin:0 auto 4rem;
+      padding:2rem;display:flex;gap:1.6rem
+    }
+    .cover{
+      flex:0 0 260px;
+      border-radius:var(--raio);object-fit:cover;width:100%;height:auto
+    }
+    .info{flex:1;display:flex;flex-direction:column;gap:.4rem}
+    h1{font-size:clamp(20px,2vw,28px);color:var(--azul);line-height:1.25}
+    .meta{font-size:.9rem;color:#555;display:flex;gap:.5rem;align-items:center}
+    .meta svg{width:15px;height:15px;stroke:#999}
+    p.desc{margin-top:.5rem;font-size:1rem;line-height:1.45;color:#333}
 
-/* card episódio -------------------- */
-.card{
-  background:#fff;border-radius:var(--radius);
-  max-width:900px;margin:0 auto 2rem;padding:2rem 1.6rem;
-  box-shadow:0 1px 4px rgba(0,0,0,.08);
-  display:flex;flex-direction:column;gap:1.5rem
-}
-.top{
-  display:flex;gap:1.6rem
-}
-.top img{
-  width:240px;min-width:240px;height:240px;object-fit:cover;border-radius:10px
-}
-.info{flex:1}
-.info h2{font-size:1.35rem;margin-bottom:.5rem}
-small{display:inline-flex;align-items:center;gap:.3rem;font-size:.85rem;color:#555}
-.info p{margin-top:1rem;font-size:.95rem;line-height:1.4}
-audio{width:100%;margin-top:1.2rem;border-radius:25px;background:#fafafa}
+    audio{width:100%;margin-top:1.4rem;border-radius:50px}
 
-/* responsivo */
-@media(max-width:650px){
-  .top{flex-direction:column;align-items:center;text-align:center}
-  .top img{width:100%;height:auto}
-}
-</style>
+    /* --- responsivo ----------------------------------- */
+    @media(max-width:720px){
+      .card{flex-direction:column;align-items:center;text-align:center}
+      .cover{width:100%;max-width:320px}
+      .info{align-items:center}
+    }
+  </style>
 </head>
 <body>
 
-<!-- Cabeçalho ------------------------------------------------------------>
-<header>
-  <h1><i data-lucide="headphones"></i>Drops de Conhecimento</h1>
-</header>
+  <!-- cabeçalho -->
+  <header>
+    <i data-lucide="headphones"></i>
+    Drops de Conhecimento
+  </header>
 
-<!-- Barra de ação -------------------------------------------------------->
-<div class="action-bar">
-  <button class="icon-btn" data-label="Voltar" onclick="history.back()">
-    <i data-lucide="chevron-left"></i>
-  </button>
-  <div class="icon-group">
-    <button class="icon-btn" id="whatsBtn" data-label="WhatsApp">
-      <i data-lucide="message-circle-more"></i>
-    </button>
-    <button class="icon-btn" id="copyBtn" data-label="Copiar link">
-      <i data-lucide="copy"></i>
-    </button>
+  <!-- barra de ação -->
+  <div class="action-bar">
+    <div class="icon-group">
+      <span class="icon-btn" id="btnVoltar" title="Voltar">
+        <i data-lucide="chevron-left"></i>
+      </span>
+    </div>
+    <div class="icon-group">
+      <span class="icon-btn" id="btnWhats" title="Compartilhar no WhatsApp">
+        <i data-lucide="message-circle-more"></i>
+      </span>
+      <span class="icon-btn" id="btnCopy" title="Copiar link">
+        <i data-lucide="copy"></i>
+      </span>
+    </div>
   </div>
-</div>
 
-<!-- Card do episódio ----------------------------------------------------->
-<article class="card" id="card">
-  <!-- Conteúdo preenchido via JS -->
-</article>
-
-<!-- Firebase + Lógica ---------------------------------------------------->
-<script type="module">
-import { initializeApp }  from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCiXyKgy5sw26JWPLZBX6SFVLbBDrLOCZw",
-  authDomain: "podcasts-faesf-72959.firebaseapp.com",
-  projectId: "podcasts-faesf-72959",
-  storageBucket: "podcasts-faesf-72959.appspot.com",
-  messagingSenderId: "1097331767383",
-  appId: "1:1097331767383:web:7e4228ea735c5365cd4b12"
-};
-initializeApp(firebaseConfig);
-const db = getFirestore();
-
-/* util ------------ */
-const qs = new URLSearchParams(location.search);
-const id = qs.get("id");
-
-/* busca episódio */
-async function carregar(){
-  if(!id){location.href="index.html";return;}
-  const snap = await getDoc(doc(db,"episodios",id));
-  if(!snap.exists()){location.href="index.html";return;}
-  const ep = snap.data();
-  render(ep);
-}
-function render(ep){
-  const card = document.getElementById("card");
-  card.innerHTML = `
-    <div class="top">
-      <img src="${ep.imagem||''}" alt="Capa do episódio">
-      <div class="info">
-        <h2>${ep.titulo}</h2>
-        <small><i data-lucide="calendar" style="width:14px;height:14px;"></i> ${ep.data} | 
-               <i data-lucide="tag" style="width:14px;height:14px;"></i> ${ep.tag||"Sem tag"}</small>
-        <p>${ep.descricao}</p>
-        <audio controls src="${ep.audio}"></audio>
+  <!-- card do episódio (preenchido via JS) -->
+  <div class="card" id="episodio">
+    <img class="cover" src="" alt="Imagem do episódio" />
+    <div class="info">
+      <h1 id="titulo"></h1>
+      <div class="meta">
+        <i data-lucide="calendar"></i><span id="data"></span>
+        <i data-lucide="tag"></i><span id="tag"></span>
       </div>
-    </div>`;
-  
-  /* ações de compartilhamento */
-  const link = location.href;
-  document.getElementById("copyBtn").onclick = ()=>{
-    navigator.clipboard.writeText(link).then(()=>alert("Link copiado!"));
-  };
-  document.getElementById("whatsBtn").onclick = ()=>{
-    const msg = encodeURIComponent(`📢 *${ep.titulo}*\n\nOuça agora: ${link}`);
-    window.open(`https://wa.me/?text=${msg}`,"_blank");
-  };
+      <p class="desc" id="descricao"></p>
+      <audio controls id="player"></audio>
+    </div>
+  </div>
 
-  lucide.createIcons();
-}
-carregar();
-</script>
+  <!-- Firebase + lógica -->
+  <script type="module">
+    import { initializeApp }      from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCiXyKgy5sw26JWPLZBX6SFVLbBDrLOCZw",
+      authDomain: "podcasts-faesf-72959.firebaseapp.com",
+      projectId: "podcasts-faesf-72959",
+      storageBucket: "podcasts-faesf-72959.appspot.com",
+      messagingSenderId: "1097331767383",
+      appId: "1:1097331767383:web:7e4228ea735c5365cd4b12"
+    };
+    const app   = initializeApp(firebaseConfig);
+    const db    = getFirestore(app);
+
+    // helper: formata data pt-BR
+    const fmt = iso => new Date(iso).toLocaleDateString("pt-BR",{timeZone:"UTC"});
+
+    async function carregar(){
+      const id = new URLSearchParams(location.search).get("id");
+      if(!id){location.href="index.html";return;}
+
+      const snap = await getDoc( doc(db,"episodios",id) );
+      if(!snap.exists()){alert("Episódio não encontrado");return;}
+      const ep = snap.data();
+
+      document.querySelector(".cover").src          = ep.imagem;
+      document.getElementById("titulo").textContent = ep.titulo;
+      document.getElementById("data").textContent   = fmt(ep.data);
+      document.getElementById("tag").textContent    = ep.tag;
+      document.getElementById("descricao").textContent = ep.descricao;
+      document.getElementById("player").src         = ep.audio;
+
+      // acções:
+      const linkPag   = location.href;
+      document.getElementById("btnVoltar").onclick = () => history.back();
+      document.getElementById("btnCopy").onclick   = () =>{
+        navigator.clipboard.writeText(linkPag);
+        alert("Link copiado!");
+      };
+      document.getElementById("btnWhats").onclick  = () =>{
+        const msg = encodeURIComponent(`🎧 ${ep.titulo}\n${linkPag}`);
+        window.open(`https://wa.me/?text=${msg}`,"_blank");
+      };
+    }
+
+    carregar();
+  </script>
+
+  <!-- ativa os ícones Lucide -->
+  <script>lucide.createIcons();</script>
 </body>
 </html>
