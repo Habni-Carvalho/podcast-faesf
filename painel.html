@@ -86,10 +86,14 @@
 <!-- PAINEL PRINCIPAL (PROTEGIDO) -->
 <div class="container hide" id="tela-painel">
   <div class="topo-acoes">
-    <button class="novo-botao" onclick="mostrarFormulario()" title="Novo episódio" tabindex="2">
-      <i data-lucide="circle-plus"></i> Novo Episódio
-    </button>
-  </div>
+  <button class="voltar-home" onclick="window.location.href='index.html'" title="Voltar para Página Pública">
+    <i data-lucide="chevron-left"></i> Página Pública
+  </button>
+  <button class="novo-botao" onclick="mostrarFormulario()" title="Novo episódio" tabindex="2">
+    <i data-lucide="circle-plus"></i> Novo Episódio
+  </button>
+</div>
+
   <div class="tags" id="tagBar"></div>
   <form class="formulario" id="formulario" style="display: none;" onsubmit="event.preventDefault();salvarEpisodio();">
     <input type="text" id="titulo" placeholder="Título do episódio" required tabindex="3">
