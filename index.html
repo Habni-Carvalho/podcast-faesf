@@ -241,7 +241,15 @@ async function carregar(){
   const snap = await getDocs(collection(db,"episodios"));
   todosEpisodios = [];
   snap.forEach(doc => todosEpisodios.push({...doc.data(),id:doc.id}));
-  todosEpisodios.sort((a,b)=> new Date(b.data) - new Date(a.data)); // mais novo primeiro
+  todosEpisodios.sort((a, b) => {
+  // Se o campo criadoEm existir, usa ele para ordenar (mais novo em cima)
+  if (a.criadoEm && b.criadoEm && a.criadoEm.seconds && b.criadoEm.seconds) {
+    return b.criadoEm.seconds - a.criadoEm.seconds;
+  }
+  // Se não existir, usa a data normal (para não dar erro nos antigos)
+  return new Date(b.data) - new Date(a.data);
+});
+ // mais novo primeiro
   renderizarTags();
   renderizarLista();
 }
