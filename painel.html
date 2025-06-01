@@ -83,6 +83,7 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
   .ep-img{width:100%;height:auto;max-width:280px}
   .icones-laterais{flex-direction:row;margin:10px 0 0;gap:20px}
 }
+.hide { display: none !important; }
 </style>
 </head>
 
@@ -370,7 +371,9 @@ function gerarChecks(destId,todas,marcadas){
   });
 }
 /* Fecha modal */
-function fecharModalUsuario(){document.getElementById('modalUsuario').classList.add('hide')}
+function fecharModalUsuario(){
+  document.getElementById('modalUsuario').classList.add('hide');
+}
 
 /* Salva */
 function salvarUsuario(){
@@ -391,26 +394,9 @@ function excluirUsuario(id){
   if(confirm('Excluir usuário?')) db.collection('usuarios').doc(id).delete().then(()=>carregarUsuarios());
 }
 
-  
-/* ---------- USUÁRIOS (exibição simples) ---------- */
-function carregarUsuarios(){
-  db.collection('usuarios').get().then(q=>{
-    const box=document.getElementById('lista-usuarios'); box.innerHTML='';
-    document.getElementById('emptyUsu').style.display=q.empty?'block':'none';
-    q.forEach(d=>{
-      const u=d.data();
-      const div=document.createElement('div');div.className='usuario-card';
-      div.innerHTML=`<strong>${u.nome||''}</strong> — ${u.cargo||''}<br>
-      <span style="font-size:.9rem;color:#555">${d.id}</span>
-      <div class="grupos" style="margin-top:6px">${(u.grupos||[]).map(g=>`<span>${g}</span>`).join(' ')}</div>`;
-      box.appendChild(div);
-    });
-  });
-}
-
-/* ---------- INÍCIO ---------- */
-function init(){ lucide.createIcons(); }
-document.addEventListener('DOMContentLoaded',init);
+document.addEventListener('DOMContentLoaded',() => {
+  lucide.createIcons();
+});
 </script>
 <script>lucide.createIcons();</script>
 </body>
