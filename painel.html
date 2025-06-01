@@ -1,163 +1,159 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Painel | Podcast FAESF</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+<meta charset="UTF-8">
+<title>Painel | Podcast FAESF</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <style>
-/* ---------- VARIÁVEIS ---------- */
-:root{--azul:#001f36;--cinza:#ebedf0;--card:#fff;--radius:32px}
+<!-- Firebase SDK (v9 compat) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
-/* ---------- BASE ---------- */
-body{font-family:"Segoe UI",Arial,sans-serif;margin:0;background:var(--cinza);color:#232528;min-height:100vh}
-header{background:var(--azul);color:#fff;padding:2.3rem 1rem 2rem 1rem;text-align:center;display:flex;align-items:center;justify-content:center;gap:.7rem;font-size:1.5rem;font-weight:700}
+<!-- Lucide icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+/* ============ DESIGN TOKENS ============ */
+:root{
+  --azul:#001f36; --cinza:#ebedf0; --card:#fff; --radius:32px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Arial,sans-serif;background:var(--cinza);color:#232528;min-height:100vh}
+
+/* ---------- HEADER ---------- */
+header{background:var(--azul);color:#fff;padding:2.3rem 1rem 2rem;display:flex;align-items:center;justify-content:center;gap:.7rem;font-size:1.5rem;font-weight:700}
 header svg{stroke:#fff;width:29px;height:29px}
-.container{max-width:940px;margin:36px auto 20px auto;background:var(--card);border-radius:var(--radius);box-shadow:0 6px 28px rgba(0,0,0,.11);padding:34px 28px 30px 28px}
-.hide{display:none!important}
 
-/* ---------- LOGIN ---------- */
-.login-box{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:330px}
-.login-btn{background:var(--azul);color:#fff;font-size:1.1rem;border:none;border-radius:13px;padding:1rem 2.3rem;display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:2rem;box-shadow:0 2px 10px #001f3621;transition:background .18s}
-.login-btn:hover{background:#163454}
-.login-btn i{stroke:#fff}
-.msg-erro{color:#b60025;background:#fff4f6;padding:.7rem 1.4rem;border-radius:10px;margin:1.5rem 0 0;font-size:1.08rem;text-align:center;border:1px solid #eabfc9}
+/* ---------- CONTAINER ---------- */
+.container{max-width:940px;margin:36px auto 20px;background:var(--card);border-radius:var(--radius);box-shadow:0 6px 28px #0002;padding:34px 28px 30px}
 
-/* ---------- MENU-ABAS ---------- */
-.menu-tabs{display:flex;gap:1rem;margin-bottom:34px;justify-content:left;align-items:center}
-.tab-btn{display:flex;align-items:center;gap:9px;padding:10px 20px;border:1.5px solid var(--azul);background:none;color:var(--azul);border-radius:16px;font-size:1.05rem;font-weight:600;cursor:pointer;transition:background .13s,color .13s}
-.tab-btn.active,.tab-btn:hover{background:var(--azul);color:#fff}
-.tab-btn i{width:23px;height:23px;stroke:currentColor}
+/* ---------- NAVIGATION PILLS ---------- */
+.tabs{display:flex;gap:10px;margin-bottom:30px}
+.tab-btn{border:none;background:#f5f7f9;border:1.5px solid var(--azul);color:var(--azul);padding:8px 18px;border-radius:40px;display:flex;align-items:center;gap:6px;font-size:1rem;font-weight:600;cursor:pointer;transition:.12s}
+.tab-btn.active{background:var(--azul);color:#fff}
+.tab-btn i{stroke:currentColor;width:19px;height:19px}
 
-/* ---------- BOTÕES TOPO ---------- */
-.topo-acoes{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;gap:1.5rem}
-.voltar-home,.novo-botao{border:1.5px solid var(--azul);background:#fff;border-radius:12px;font-size:1.05rem;padding:8px 17px;display:flex;align-items:center;gap:9px;cursor:pointer;font-weight:600;color:var(--azul);transition:background .13s,color .13s}
-.voltar-home i,.novo-botao i{stroke:var(--azul)}
+/* ---------- BAR TOPO AÇÕES ---------- */
+.topo-acoes{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:26px}
+.voltar-home,.novo-botao{border:1.5px solid var(--azul);background:#fff;color:var(--azul);border-radius:10px;display:flex;align-items:center;gap:8px;padding:7px 18px;font-size:1rem;font-weight:600;cursor:pointer;transition:.13s}
 .voltar-home:hover,.novo-botao:hover{background:var(--azul);color:#fff}
-.voltar-home:hover i,.novo-botao:hover i{stroke:#fff}
+.voltar-home i,.novo-botao i{stroke:currentColor;width:21px;height:21px}
 
-/* ---------- TAGS / FORMULÁRIO / CARDS (mesmo CSS que já usava) ---------- */
-/* (mantive igual ao seu; não altere) */
-.tags{display:flex;flex-wrap:wrap;gap:.7rem;margin-bottom:2.2rem}
-.tag-btn{padding:.38rem 1.3rem;border:1.3px solid var(--azul);border-radius:17px;background:#f6f7f9;color:var(--azul);cursor:pointer;font-size:.99rem;font-weight:500;box-shadow:0 1px 3px #001f3622;transition:background .13s}
+/* ---------- TAGS ---------- */
+.tags{display:flex;flex-wrap:wrap;gap:.7rem;margin-bottom:2rem}
+.tag-btn{border:1.3px solid var(--azul);background:#f6f7f9;color:var(--azul);padding:.38rem 1.3rem;border-radius:17px;font-size:.96rem;font-weight:500;cursor:pointer;transition:.1s}
 .tag-btn.active,.tag-btn:hover{background:var(--azul);color:#fff}
-.formulario{background:#f9fafb;padding:23px 18px 28px;border-radius:20px;margin-bottom:30px;position:relative}
-.formulario input,.formulario textarea{width:100%;padding:12px;margin-bottom:15px;border:1px solid #d1d5db;border-radius:11px;font-size:15px}
-.formulario .btn-salvar{float:right;margin-top:8px}
-.formulario .btn-salvar button{border:1.5px solid var(--azul);background:none;color:var(--azul);padding:10px 22px;font-size:1.08rem;border-radius:12px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:600;transition:background .13s,color .13s}
-.formulario .btn-salvar button i{stroke:var(--azul)}
-.formulario .btn-salvar button:hover{background:var(--azul);color:#fff}
-.formulario .btn-salvar button:hover i{stroke:#fff}
 
-/* ------- CARDS EPISÓDIO (idem) ------- */
-.episodio{background:#fff;border-radius:24px;padding:20px 20px 24px;margin-bottom:38px;box-shadow:0 2px 9px #001f360e;position:relative}
-.epa{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap}
-.conteudo-flex{display:flex;flex:1;gap:20px}
-.conteudo img{width:150px;height:150px;object-fit:cover;border-radius:16px;box-shadow:0 2px 6px #001f3620}
-.conteudo-texto{flex:1;min-width:0}
-.titulo{font-size:1.12rem;font-weight:bold;margin-bottom:.15rem;color:var(--azul);line-height:1.28}
-.data{font-size:.97rem;color:#777;margin:4px 0 9px;display:flex;align-items:center;gap:10px}
-.badge{background:#f6f8fa;color:#19598a;border-radius:10px;font-size:.93rem;padding:2.5px 10px;margin-left:4px;border:1px solid #d4e1ef;display:inline-block}
+/* ---------- FORM EPISÓDIO ---------- */
+.formulario{background:#f9fafb;border-radius:20px;padding:23px 18px 28px;margin-bottom:28px}
+.formulario input,.formulario textarea{width:100%;font-size:15px;border:1px solid #d1d5db;border-radius:11px;padding:12px;margin-bottom:14px}
+.formulario .btn-salvar{display:flex;justify-content:flex-end}
+.formulario .btn-salvar button{border:1.5px solid var(--azul);background:#fff;color:var(--azul);border-radius:12px;padding:9px 22px;display:flex;align-items:center;gap:7px;font-size:1rem;font-weight:600;cursor:pointer;transition:.13s}
+.formulario .btn-salvar button:hover{background:var(--azul);color:#fff}
+.formulario .btn-salvar button i{stroke:currentColor;width:20px;height:20px}
+
+/* ---------- LISTA EPISÓDIOS ---------- */
+.episodio{background:#fff;border-radius:24px;padding:20px;margin-bottom:36px;box-shadow:0 2px 9px #001f360e}
+.ep-flex{display:flex;gap:20px}
+.ep-img{width:150px;height:150px;object-fit:cover;border-radius:16px;box-shadow:0 2px 6px #001f3620}
+.ep-content{flex:1;min-width:0}
+.titulo{font-size:1.1rem;font-weight:700;color:var(--azul);margin:0 0 .2rem}
+.data{font-size:.9rem;color:#777;display:flex;align-items:center;gap:9px;margin:0 0 9px}
+.badge{background:#f6f8fa;border:1px solid #d4e1ef;border-radius:10px;padding:2px 9px;font-size:.85rem;color:#19598a}
+.descricao{font-size:.95rem;line-height:1.45;margin:0 0 10px}
 audio{width:100%;border-radius:18px;background:#f3f5f7}
-.icones-laterais{display:flex;flex-direction:column;gap:16px;align-items:flex-end;margin-left:16px;margin-top:12px}
-.btn-icon{background:none;border:none;cursor:pointer;padding:.24rem;border-radius:8px;transition:background .12s;outline:none}
-.btn-icon i{width:23px;height:23px;stroke:var(--azul);transition:stroke .15s}
+.icones-laterais{display:flex;flex-direction:column;gap:15px;margin-left:16px}
+.btn-icon{background:none;border:none;padding:.25rem;border-radius:8px;cursor:pointer;transition:background .1s}
+.btn-icon i{stroke:var(--azul);width:23px;height:23px}
 .btn-icon:hover{background:#f1f5fa}
-.btn-icon:hover i{stroke:#2564b3}
+
+/* ---------- LISTA USUÁRIOS (simples) ---------- */
+.usuario-card{background:#fff;border-radius:18px;padding:16px 20px;margin-bottom:22px;box-shadow:0 2px 6px #001f360e}
+.usuario-card strong{color:var(--azul)}
+.usuario-card .grupos span{background:#eaf2ff;border:1px solid #c9def9;border-radius:8px;padding:1px 8px;margin-right:5px;font-size:.8rem;color:#19598a}
+
+/* ---------- EMPTY STATE ---------- */
+.empty{color:#888;text-align:center;margin:2rem 0;font-size:1rem}
+
+/* ---------- RESPONSIVO ---------- */
 @media(max-width:720px){
   .container{padding:1rem 2vw}
-  .epa,.conteudo-flex{flex-direction:column;align-items:center}
-  .conteudo img{width:100%;height:auto;max-width:290px}
-  .icones-laterais{flex-direction:row;margin-left:0;gap:20px}
+  .ep-flex{flex-direction:column;align-items:center}
+  .ep-img{width:100%;height:auto;max-width:280px}
+  .icones-laterais{flex-direction:row;margin:10px 0 0;gap:20px}
 }
-  </style>
+</style>
 </head>
+
 <body>
-<header>
-  <i data-lucide="headphones"></i>
-  Drops de Conhecimento
-</header>
+<header><i data-lucide="headphones"></i> Drops de Conhecimento</header>
 
-<!-- MENU-ABAS (invisível até login) -->
-<div class="menu-tabs" id="menu-tabs" style="display:none;">
-  <button class="tab-btn active" id="tab-episodios" onclick="mostrarSecao('episodios')">
-    <i data-lucide="list"></i> Episódios
-  </button>
-  <button class="tab-btn" id="tab-usuarios" onclick="mostrarSecao('usuarios')">
-    <i data-lucide="user-plus"></i> Usuários
-  </button>
-</div>
-
-<!-- LOGIN -->
+<!-- ========== LOGIN GOOGLE (mesmo de antes) ========== -->
 <div class="container" id="tela-login">
-  <div class="login-box">
-    <h2 style="font-weight:500;margin-bottom:1.6rem;color:var(--azul)">Acesso restrito</h2>
-    <button class="login-btn" onclick="loginGoogle()">
-      <i data-lucide="log-in"></i> Entrar com Google
-    </button>
-    <div class="msg-erro" id="msgErro" style="display:none"></div>
-    <div style="margin-top:2.2rem;color:#666;font-size:.98rem;opacity:.77">
-      Somente administradores podem acessar este painel.
-    </div>
+  <div style="text-align:center;padding:70px 0">
+      <h2 style="color:var(--azul);font-weight:500">Acesso restrito</h2>
+      <button class="login-btn" onclick="loginGoogle()">
+        <i data-lucide="log-in"></i> Entrar com Google
+      </button>
+      <div id="msgErro" class="msg-erro" style="display:none"></div>
+      <p style="margin-top:1.7rem;color:#666;opacity:.75;font-size:.94rem">Somente administradores podem acessar este painel.</p>
   </div>
 </div>
 
-<!-- PAINEL PROTEGIDO -->
+<!-- ========== PAINEL ========== -->
 <div class="container hide" id="tela-painel">
-  <!-- Seção EPISÓDIOS -->
-  <div id="secao-episodios">
+
+  <!-- NAV PILLS -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-episodios" onclick="mostrarSecao('episodios')">
+      <i data-lucide="list"></i> Episódios
+    </button>
+    <button class="tab-btn" id="tab-usuarios" onclick="mostrarSecao('usuarios')">
+      <i data-lucide="user-plus"></i> Usuários
+    </button>
+  </div>
+
+  <!-- ===== SEÇÃO EPISÓDIOS ===== -->
+  <section id="secao-episodios" class="secao">
     <div class="topo-acoes">
-      <button class="voltar-home" onclick="window.location.href='index.html'" title="Voltar para Página Pública">
-        <i data-lucide="chevron-left"></i> Página Pública
-      </button>
-      <button class="novo-botao" onclick="mostrarFormulario()" title="Novo episódio" tabindex="2">
-        <i data-lucide="circle-plus"></i> Novo Episódio
-      </button>
+      <button class="voltar-home" onclick="location.href='index.html'"><i data-lucide="chevron-left"></i>Página Pública</button>
+      <button class="novo-botao" onclick="mostrarFormulario()"><i data-lucide="circle-plus"></i>Novo Episódio</button>
     </div>
 
-    <div class="tags" id="tagBar"></div>
+    <!-- tags -->
+    <div id="tagBar" class="tags"></div>
 
-    <form class="formulario" id="formulario" style="display:none" onsubmit="event.preventDefault();salvarEpisodio();">
-      <input type="text" id="titulo" placeholder="Título do episódio" required tabindex="3">
-      <textarea id="descricao" placeholder="Descrição do episódio" required tabindex="4"></textarea>
-      <input type="date" id="data" required tabindex="5">
-      <input type="text" id="tag" placeholder="Tags (ex: Notícias,Regimento Geral FAESF)" required tabindex="6">
-      <input type="text" id="imagem" placeholder="Link da imagem (.jpg ou .png)" required tabindex="7">
-      <input type="text" id="audio" placeholder="Link do áudio (.mp3)" required tabindex="8">
-      <div class="btn-salvar">
-        <button type="submit" title="Salvar" tabindex="9">
-          <i data-lucide="save"></i> Salvar
-        </button>
-      </div>
+    <!-- form -->
+    <form id="formulario" class="formulario" style="display:none" onsubmit="event.preventDefault();salvarEpisodio();">
+      <input id="titulo" placeholder="Título do episódio" required>
+      <textarea id="descricao" placeholder="Descrição do episódio" required></textarea>
+      <input id="data" type="date" required>
+      <input id="tag" placeholder="Tags (ex: Notícias, EaD)" required>
+      <input id="imagem" placeholder="Link da imagem (.jpg ou .png)" required>
+      <input id="audio" placeholder="Link do áudio (.mp3)" required>
+      <div class="btn-salvar"><button type="submit"><i data-lucide="save"></i>Salvar</button></div>
     </form>
 
+    <!-- lista -->
     <div id="lista-episodios"></div>
+    <div id="emptyEp" class="empty" style="display:none">Nenhum episódio cadastrado.</div>
+  </section>
 
-    <div class="empty-state" id="emptyMsg" style="display:none">
-      Nenhum episódio cadastrado.<br>
-      <img src="https://lucide.dev/icons/radio.svg" alt="Nenhum episódio">
-      <div style="margin-top:.7rem;">Clique em <b>Novo Episódio</b> para cadastrar o primeiro!</div>
-    </div>
-
-    <div id="toast" style="display:none;position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:var(--azul);color:#fff;padding:.75rem 1.7rem;border-radius:13px;font-size:1rem;box-shadow:0 2px 8px #001f3645;z-index:1001"></div>
-  </div>
-
-  <!-- Seção USUÁRIOS (ainda vazia) -->
-  <div id="secao-usuarios" style="display:none;">
-    <div style="padding:2rem;text-align:center;color:#555;">
-      Gestão de usuários – em breve!
-    </div>
-  </div>
+  <!-- ===== SEÇÃO USUÁRIOS ===== -->
+  <section id="secao-usuarios" class="secao hide">
+      <h3 style="margin-top:0;color:var(--azul)">Usuários autorizados</h3>
+      <div id="lista-usuarios"></div>
+      <div id="emptyUsu" class="empty" style="display:none">Nenhum usuário cadastrado.</div>
+  </section>
 </div>
 
+<!-- Toast simples -->
+<div id="toast" style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--azul);color:#fff;padding:.75rem 1.6rem;border-radius:12px;font-size:.95rem;box-shadow:0 2px 8px #001f3645;z-index:1000"></div>
+
 <script>
-/* ---------- FIREBASE & LOGIN ---------- */
-const ADMINS=["hpc@faesf.com.br"];
-const firebaseConfig={
+/* ---------- CONFIG FIREBASE ---------- */
+const firebaseConfig = {
   apiKey:"AIzaSyCiXyKgy5sw26JWPLZBX6SFVLbBDrLOCZw",
   authDomain:"podcasts-faesf-72959.firebaseapp.com",
   projectId:"podcasts-faesf-72959",
@@ -166,45 +162,128 @@ const firebaseConfig={
   appId:"1:1097331767383:web:7e4228ea735c5365cd4b12"
 };
 firebase.initializeApp(firebaseConfig);
-const db=firebase.firestore();
-const auth=firebase.auth();
-function loginGoogle(){auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>alert("Erro login Google: "+e.message))}
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+/* ---------- ADMIN E-MAIL(S) ---------- */
+const ADMINS = ["hpc@faesf.com.br"];
+
+/* ---------- AUTENTICAÇÃO GOOGLE ---------- */
+function loginGoogle(){
+  auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .catch(e=>alert("Erro no login: "+e.message));
+}
 auth.onAuthStateChanged(user=>{
   if(user && ADMINS.includes(user.email)){
-    document.getElementById("tela-login").classList.add("hide");
-    document.getElementById("tela-painel").classList.remove("hide");
-    document.getElementById("menu-tabs").style.display="";
-    carregarEpisodios();
-  }else if(user){
-    document.getElementById("msgErro").style.display="block";
-    document.getElementById("msgErro").textContent="Acesso negado. E-mail não autorizado.";
-    auth.signOut();
+     document.getElementById('tela-login').classList.add('hide');
+     document.getElementById('tela-painel').classList.remove('hide');
+     mostrarSecao('episodios');    // default
   }else{
-    document.getElementById("tela-login").classList.remove("hide");
-    document.getElementById("tela-painel").classList.add("hide");
-    document.getElementById("menu-tabs").style.display="none";
+     document.getElementById('tela-login').classList.remove('hide');
+     document.getElementById('tela-painel').classList.add('hide');
   }
 });
 
-/* ---------- TROCA DE SEÇÃO (abas) ---------- */
-function mostrarSecao(secao){
-  document.getElementById("secao-episodios").style.display=(secao==="episodios")?"":"none";
-  document.getElementById("secao-usuarios").style.display=(secao==="usuarios")?"":"none";
-  document.getElementById("tab-episodios").classList.toggle("active",secao==="episodios");
-  document.getElementById("tab-usuarios").classList.toggle("active",secao==="usuarios");
-  if(typeof lucide!=="undefined") lucide.createIcons();
+/* ---------- TABS ---------- */
+function mostrarSecao(qual){
+  document.querySelectorAll('.secao').forEach(s=>s.classList.add('hide'));
+  document.querySelector('#secao-'+qual).classList.remove('hide');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('#tab-'+qual).classList.add('active');
+  if(qual==='episodios') carregarEpisodios();
+  if(qual==='usuarios')  carregarUsuarios();
 }
 
-/* ---------- CÓDIGO DE EPISÓDIOS (igual ao seu) ---------- */
-let todos=[],editandoId=null,tagAtual="Todas";
-function mostrarFormulario(ep=null,id=null){/* ... (mantido igual) ... */}
-function limparFormulario(){editandoId=null;document.getElementById("formulario").reset();document.getElementById("formulario").style.display="none";}
-function toast(msg){const el=document.getElementById("toast");el.textContent=msg;el.style.display="block";setTimeout(()=>el.style.display="none",1900);}
-function salvarEpisodio(){/* ... (mantido igual) ... */}
-function excluirEpisodio(id){/* ... (mantido igual) ... */}
-function renderizarTags(){/* ... (mantido igual) ... */}
-function renderizarLista(){/* ... (mantido igual) ... */}
-function carregarEpisodios(){db.collection("episodios").orderBy("criadoEm","desc").get().then(q=>{todos=[];q.forEach(d=>{const ep=d.data();ep.id=d.id;todos.push(ep)});renderizarTags();renderizarLista();});}
+/* ---------- TOAST ---------- */
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent=msg; el.style.display='block';
+  setTimeout(()=>el.style.display='none',2000);
+}
+
+/* ---------- CRUD EPISÓDIOS ---------- */
+let todos=[], editandoId=null, tagAtual="Todas";
+function carregarEpisodios(){
+  db.collection('episodios').orderBy('criadoEm','desc').get().then(q=>{
+    todos=[]; q.forEach(d=>todos.push({...d.data(),id:d.id}));
+    renderTags(); renderLista();
+  });
+}
+function renderTags(){
+  const set=new Set(); todos.forEach(ep=>(ep.tags||"").split(',').forEach(t=>t.trim()&&set.add(t.trim())));
+  const barra=document.getElementById('tagBar'); barra.innerHTML='';
+  ['Todas',...set].forEach(t=>{
+     const b=document.createElement('button');
+     b.className='tag-btn'+(t===tagAtual?' active':'');
+     b.textContent=t||'Sem tag';
+     b.onclick=()=>{tagAtual=t;renderTags();renderLista()};
+     barra.appendChild(b);
+  });
+}
+function renderLista(){
+  const box=document.getElementById('lista-episodios'); box.innerHTML='';
+  const lista=todos.filter(e=>tagAtual==='Todas'||(e.tags||"").split(',').map(s=>s.trim()).includes(tagAtual));
+  document.getElementById('emptyEp').style.display=lista.length?'none':'block';
+  lista.forEach(ep=>{
+     const card=document.createElement('div'); card.className='episodio';
+     card.innerHTML=`
+      <div class="ep-flex">
+         <img class="ep-img" src="${ep.imagem}">
+         <div class="ep-content">
+           <div class="titulo">${ep.titulo}</div>
+           <p class="data"><i data-lucide="calendar"></i>${ep.data}</p>
+           <p class="descricao">${ep.descricao}</p>
+           <audio controls src="${ep.audio}"></audio>
+         </div>
+         <div class="icones-laterais">
+           <button class="btn-icon" onclick='mostrarFormulario(${JSON.stringify(ep)}, "${ep.id}")' title="Editar"><i data-lucide="square-pen"></i></button>
+           <button class="btn-icon" onclick='excluirEpisodio("${ep.id}")'  title="Excluir"><i data-lucide="trash-2"></i></button>
+         </div>
+      </div>`;
+     box.appendChild(card);
+  });
+  lucide.createIcons();
+}
+function mostrarFormulario(ep=null,id=null){
+  editandoId=id;
+  const f=document.getElementById('formulario'); f.style.display='block';
+  f.titulo.value=ep?.titulo||''; f.descricao.value=ep?.descricao||'';
+  f.data.value=ep?.data||''; f.tag.value=ep?.tags||'';
+  f.imagem.value=ep?.imagem||''; f.audio.value=ep?.audio||'';
+  f.titulo.focus();
+}
+function salvarEpisodio(){
+  const f=document.getElementById('formulario');
+  const dados={titulo:f.titulo.value.trim(),descricao:f.descricao.value.trim(),data:f.data.value,
+               tags:f.tag.value.trim(),imagem:f.imagem.value.trim(),audio:f.audio.value.trim(),
+               criadoEm:firebase.firestore.Timestamp.now()};
+  const ref=db.collection('episodios');
+  (editandoId?ref.doc(editandoId).set(dados):ref.add(dados))
+     .then(()=>{toast('Salvo com sucesso');f.reset();f.style.display='none';carregarEpisodios();editandoId=null});
+}
+function excluirEpisodio(id){
+  if(confirm('Excluir episódio?')) db.collection('episodios').doc(id).delete().then(()=>carregarEpisodios());
+}
+
+/* ---------- USUÁRIOS (exibição simples) ---------- */
+function carregarUsuarios(){
+  db.collection('usuarios').get().then(q=>{
+    const box=document.getElementById('lista-usuarios'); box.innerHTML='';
+    document.getElementById('emptyUsu').style.display=q.empty?'block':'none';
+    q.forEach(d=>{
+      const u=d.data();
+      const div=document.createElement('div');div.className='usuario-card';
+      div.innerHTML=`<strong>${u.nome||''}</strong> — ${u.cargo||''}<br>
+      <span style="font-size:.9rem;color:#555">${d.id}</span>
+      <div class="grupos" style="margin-top:6px">${(u.grupos||[]).map(g=>`<span>${g}</span>`).join(' ')}</div>`;
+      box.appendChild(div);
+    });
+  });
+}
+
+/* ---------- INÍCIO ---------- */
+function init(){ lucide.createIcons(); }
+document.addEventListener('DOMContentLoaded',init);
 </script>
 <script>lucide.createIcons();</script>
 </body>
