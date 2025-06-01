@@ -141,11 +141,48 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
   </section>
 
   <!-- ===== SEÇÃO USUÁRIOS ===== -->
-  <section id="secao-usuarios" class="secao hide">
-      <h3 style="margin-top:0;color:var(--azul)">Usuários autorizados</h3>
-      <div id="lista-usuarios"></div>
-      <div id="emptyUsu" class="empty" style="display:none">Nenhum usuário cadastrado.</div>
-  </section>
+<section id="secao-usuarios" class="secao hide">
+  <div class="topo-acoes" style="margin-bottom:20px">
+    <h3 style="margin:0;color:var(--azul);font-weight:600">Usuários</h3>
+    <button class="novo-botao" onclick="abrirFormUsuario()">
+      <i data-lucide="user-plus"></i>Novo Usuário
+    </button>
+  </div>
+
+  <!-- LISTA -->
+  <div id="lista-usuarios"></div>
+  <div id="emptyUsu" class="empty" style="display:none">Nenhum usuário cadastrado.</div>
+</section>
+
+<!-- ===== MODAL USUÁRIO (cadastro / edição) ===== -->
+<div id="modalUsuario" class="hide" style="
+   position:fixed;inset:0;background:#0006 0.0;background:rgba(0,0,0,.45);
+   display:flex;align-items:center;justify-content:center;z-index:1500">
+  <div style="background:#fff;border-radius:18px;padding:28px 26px;max-width:460px;width:94%;box-shadow:0 8px 26px #001f3614;position:relative">
+    <h3 id="tituloModal" style="margin-top:0;color:var(--azul)">Novo usuário</h3>
+    <form id="formUsuario" onsubmit="event.preventDefault();salvarUsuario();" autocomplete="off">
+      <input id="u_nome" placeholder="Nome completo" required>
+      <input id="u_email" placeholder="E-mail" type="email" required>
+      <input id="u_cargo" placeholder="Cargo / Função" required>
+      <!-- CHECK-BOXES GRUPOS -->
+      <div style="margin:14px 0 8px;font-weight:600;color:var(--azul)">Grupos</div>
+      <div id="checkGrupos" style="display:flex;flex-wrap:wrap;gap:12px"></div>
+      <!-- CHECK-BOXES PLAYLISTS -->
+      <div style="margin:18px 0 8px;font-weight:600;color:var(--azul)">Playlists</div>
+      <div id="checkPlaylists" style="display:flex;flex-wrap:wrap;gap:12px"></div>
+
+      <div style="display:flex;justify-content:flex-end;margin-top:22px;gap:10px">
+        <button type="button" class="voltar-home" onclick="fecharModalUsuario()">
+          <i data-lucide="x"></i>Cancelar
+        </button>
+        <button class="novo-botao" type="submit">
+          <i data-lucide="save"></i>Salvar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 </div>
 
 <!-- Toast simples -->
@@ -265,6 +302,96 @@ function excluirEpisodio(id){
   if(confirm('Excluir episódio?')) db.collection('episodios').doc(id).delete().then(()=>carregarEpisodios());
 }
 
+/* =====================================================
+   ==========   CRUD    USUÁRIOS   COMPLETO  ============
+   ===================================================== */
+let editUserId=null;
+/* Carrega usuários */
+function carregarUsuarios(){
+  Promise.all([
+    db.collection('usuarios').get(),
+    db.collection('grupos').get(),
+    db.collection('playlists').get()
+  ]).then(([snapUsu,snapGrup,snapPlay])=>{
+     // monta listagem
+     const box=document.getElementById('lista-usuarios'); box.innerHTML='';
+     if(snapUsu.empty){document.getElementById('emptyUsu').style.display='block';return}
+     document.getElementById('emptyUsu').style.display='none';
+
+     snapUsu.forEach(doc=>{
+        const u=doc.data();
+        const card=document.createElement('div');
+        card.className='usuario-card';
+        card.innerHTML=`
+           <strong>${u.nome||'(sem nome)'}</strong> — ${u.cargo||''}<br>
+           <span style="font-size:.82rem;color:#666">${u.email}</span>
+           <div class="grupos" style="margin-top:6px">${(u.grupos||[])
+             .map(g=>`<span>${g}</span>`).join(' ')}</div>
+           <button class="btn-icon" style="position:absolute;top:14px;right:48px"
+                   title="Editar" onclick='abrirFormUsuario(${JSON.stringify({id:doc.id,...u})})'>
+              <i data-lucide="square-pen"></i>
+           </button>
+           <button class="btn-icon" style="position:absolute;top:14px;right:14px"
+                   title="Excluir" onclick='excluirUsuario("${doc.id}")'>
+              <i data-lucide="trash-2"></i>
+           </button>`;
+        card.style.position='relative';
+        box.appendChild(card);
+     });
+     lucide.createIcons();
+     /* guarda listas para o formulário */
+     window.TODOS_GRUPOS=snapGrup.docs.map(d=>d.data().nome);
+     window.TODOS_PL=snapPlay.docs.map(d=>d.data().nome);
+  });
+}
+
+/* Abre modal (novo ou edição) */
+function abrirFormUsuario(user=null){
+  editUserId = user?.id || null;
+  document.getElementById('tituloModal').textContent= editUserId?'Editar usuário':'Novo usuário';
+  document.getElementById('u_nome').value=user?.nome||'';
+  document.getElementById('u_email').value=user?.email||'';
+  document.getElementById('u_cargo').value=user?.cargo||'';
+  gerarChecks('checkGrupos',window.TODOS_GRUPOS||[],user?.grupos||[]);
+  gerarChecks('checkPlaylists',window.TODOS_PL||[],user?.playlists||[]);
+  document.getElementById('modalUsuario').classList.remove('hide');
+  lucide.createIcons();
+}
+/* Gera checkboxes bonitinhos */
+function gerarChecks(destId,todas,marcadas){
+  const box=document.getElementById(destId); box.innerHTML='';
+  todas.forEach(nome=>{
+    const id=destId+nome;
+    box.insertAdjacentHTML('beforeend',`
+      <label style="display:flex;align-items:center;gap:6px;font-size:.9rem">
+        <input type="checkbox" id="${id}" ${marcadas.includes(nome)?'checked':''}>
+        <span>${nome}</span>
+      </label>`);
+  });
+}
+/* Fecha modal */
+function fecharModalUsuario(){document.getElementById('modalUsuario').classList.add('hide')}
+
+/* Salva */
+function salvarUsuario(){
+  const grupos=Array.from(document.querySelectorAll('#checkGrupos input:checked')).map(c=>c.nextElementSibling.textContent);
+  const pls   =Array.from(document.querySelectorAll('#checkPlaylists input:checked')).map(c=>c.nextElementSibling.textContent);
+
+  const u={ nome:u_nome.value.trim(),
+            email:u_email.value.trim(),
+            cargo:u_cargo.value.trim(),
+            grupos, playlists:pls };
+
+  const ref=db.collection('usuarios');
+  (editUserId?ref.doc(editUserId).set(u):ref.add(u))
+     .then(()=>{toast('Salvo');fecharModalUsuario();carregarUsuarios()});
+}
+/* Excluir usuário */
+function excluirUsuario(id){
+  if(confirm('Excluir usuário?')) db.collection('usuarios').doc(id).delete().then(()=>carregarUsuarios());
+}
+
+  
 /* ---------- USUÁRIOS (exibição simples) ---------- */
 function carregarUsuarios(){
   db.collection('usuarios').get().then(q=>{
