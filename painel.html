@@ -63,6 +63,9 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
   .icones-laterais{flex-direction:row;margin:10px 0 0;gap:20px}
 }
 .hide { display: none !important; }
+/* Botões simples para criação rápida */
+.add-quick-btn { border:none; background:transparent; color:var(--azul); font-size:1.2rem; cursor:pointer; margin-left:8px; padding:2px 8px; border-radius:8px;}
+.add-quick-btn:hover { background:#e2eaff; }
 </style>
 </head>
 
@@ -102,8 +105,12 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
       <textarea id="descricao" placeholder="Descrição do episódio" required></textarea>
       <input id="data" type="date" required>
       <input id="tag" placeholder="Tags (ex: Notícias, EaD)" required>
-      <input id="imagem" placeholder="Link da imagem (.jpg ou .png)" required>
-      <input id="audio" placeholder="Link do áudio (.mp3)" required>
+      <div style="margin: 10px 0 12px 0; display: flex; align-items: center;">
+        <input id="imagem" placeholder="Link da imagem (.jpg ou .png)" required style="flex:1">
+      </div>
+      <div style="margin-bottom:14px; display: flex; align-items: center;">
+        <input id="audio" placeholder="Link do áudio (.mp3)" required style="flex:1">
+      </div>
       <div class="btn-salvar"><button type="submit"><i data-lucide="save"></i>Salvar</button></div>
     </form>
     <div id="lista-episodios"></div>
@@ -121,6 +128,7 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
     <div id="emptyUsu" class="empty" style="display:none">Nenhum usuário cadastrado.</div>
   </section>
 
+  <!-- Modal Usuário -->
   <div id="modalUsuario" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1500">
     <div style="background:#fff;border-radius:18px;padding:28px 26px;max-width:460px;width:94%;box-shadow:0 8px 26px #001f3614;position:relative">
       <h3 id="tituloModal" style="margin-top:0;color:var(--azul)">Novo usuário</h3>
@@ -128,9 +136,15 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
         <input id="u_nome" placeholder="Nome completo" required>
         <input id="u_email" placeholder="E-mail" type="email" required>
         <input id="u_cargo" placeholder="Cargo / Função" required>
-        <div style="margin:14px 0 8px;font-weight:600;color:var(--azul)">Grupos</div>
+        <div style="margin:14px 0 8px;font-weight:600;color:var(--azul);display:flex;align-items:center">
+          Grupos
+          <button type="button" class="add-quick-btn" title="Novo Grupo" onclick="abrirModalGrupo()"><i data-lucide='plus'></i></button>
+        </div>
         <div id="checkGrupos" style="display:flex;flex-wrap:wrap;gap:12px"></div>
-        <div style="margin:18px 0 8px;font-weight:600;color:var(--azul)">Playlists</div>
+        <div style="margin:18px 0 8px;font-weight:600;color:var(--azul);display:flex;align-items:center">
+          Playlists
+          <button type="button" class="add-quick-btn" title="Nova Playlist" onclick="abrirModalPlaylist()"><i data-lucide='plus'></i></button>
+        </div>
         <div id="checkPlaylists" style="display:flex;flex-wrap:wrap;gap:12px"></div>
         <div style="display:flex;justify-content:flex-end;margin-top:22px;gap:10px">
           <button type="button" class="voltar-home" onclick="fecharModalUsuario()">
@@ -144,9 +158,37 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
     </div>
   </div>
 
+  <!-- Modal Grupo -->
+  <div id="modalGrupo" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1700">
+    <div style="background:#fff;border-radius:15px;padding:26px 20px;width:340px;max-width:96vw;box-shadow:0 6px 22px #001f3614;">
+      <h3 style="margin-top:0;font-size:1.15rem;color:var(--azul)">Novo Grupo</h3>
+      <form onsubmit="event.preventDefault();salvarGrupo();">
+        <input id="novoGrupo" placeholder="Nome do grupo" required autofocus>
+        <div style="display:flex;justify-content:flex-end;margin-top:18px;gap:9px">
+          <button type="button" class="voltar-home" onclick="fecharModalGrupo()"><i data-lucide='x'></i>Cancelar</button>
+          <button class="novo-botao" type="submit"><i data-lucide='save'></i>Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Playlist -->
+  <div id="modalPlaylist" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1700">
+    <div style="background:#fff;border-radius:15px;padding:26px 20px;width:340px;max-width:96vw;box-shadow:0 6px 22px #001f3614;">
+      <h3 style="margin-top:0;font-size:1.15rem;color:var(--azul)">Nova Playlist</h3>
+      <form onsubmit="event.preventDefault();salvarPlaylist();">
+        <input id="novaPlaylist" placeholder="Nome da playlist" required autofocus>
+        <div style="display:flex;justify-content:flex-end;margin-top:18px;gap:9px">
+          <button type="button" class="voltar-home" onclick="fecharModalPlaylist()"><i data-lucide='x'></i>Cancelar</button>
+          <button class="novo-botao" type="submit"><i data-lucide='save'></i>Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 </div>
 
-<div id="toast" style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--azul);color:#fff;padding:.75rem 1.6rem;border-radius:12px;font-size:.95rem;box-shadow:0 2px 8px #001f3645;z-index:1000"></div>
+<div id="toast" style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--azul);color:#fff;padding:.75rem 1.6rem;border-radius:12px;font-size:.95rem;box-shadow:0 2px 8px #001f3645;z-index:2000"></div>
 
 <script>
 const firebaseConfig = {
@@ -189,7 +231,7 @@ function mostrarSecao(qual){
 function toast(msg){
   const el = document.getElementById('toast');
   el.textContent=msg; el.style.display='block';
-  setTimeout(()=>el.style.display='none',2000);
+  setTimeout(()=>el.style.display='none',2200);
 }
 
 /* ---------- CRUD EPISÓDIOS ---------- */
@@ -235,7 +277,8 @@ function renderLista(){
   });
   lucide.createIcons();
 }
-function mostrarFormulario(ep=null,id=null){
+
+async function mostrarFormulario(ep=null,id=null){
   editandoId=id;
   const f=document.getElementById('formulario'); f.style.display='block';
   f.titulo.value=ep?.titulo||''; f.descricao.value=ep?.descricao||'';
@@ -243,8 +286,20 @@ function mostrarFormulario(ep=null,id=null){
   f.imagem.value=ep?.imagem||''; f.audio.value=ep?.audio||'';
   f.titulo.focus();
 }
-function salvarEpisodio(){
+
+async function salvarEpisodio(){
   const f=document.getElementById('formulario');
+  // Playlists do episódio
+  let tagsPlaylist = (f.tag.value.trim() || '').split(',').map(t=>t.trim()).filter(Boolean);
+  // Confirma se cada tag existe em playlists (caso não exista, cria)
+  for (const nome of tagsPlaylist) {
+    if (nome) {
+      let snap = await db.collection('playlists').where('nome', '==', nome).get();
+      if (snap.empty) {
+        await db.collection('playlists').add({nome: nome});
+      }
+    }
+  }
   const dados={titulo:f.titulo.value.trim(),descricao:f.descricao.value.trim(),data:f.data.value,
                tags:f.tag.value.trim(),imagem:f.imagem.value.trim(),audio:f.audio.value.trim(),
                criadoEm:firebase.firestore.Timestamp.now()};
@@ -256,12 +311,11 @@ function excluirEpisodio(id){
   if(confirm('Excluir episódio?')) db.collection('episodios').doc(id).delete().then(()=>carregarEpisodios());
 }
 
-/* ---------- CRUD USUÁRIOS ---------- */
+/* ---------- CRUD USUÁRIOS, GRUPOS E PLAYLISTS ---------- */
 let editUserId = null;
 
-// NOVA FUNÇÃO para garantir grupos/playlists antes de abrir modal
+// Busca atualizada antes de abrir o modal usuário
 async function prepararEabrirFormUsuario(user=null){
-  // busca grupos e playlists (sempre atualizado)
   const [snapGrup, snapPlay] = await Promise.all([
     db.collection('grupos').get(),
     db.collection('playlists').get()
@@ -339,6 +393,40 @@ function salvarUsuario(){
 }
 function excluirUsuario(id){
   if(confirm('Excluir usuário?')) db.collection('usuarios').doc(id).delete().then(()=>carregarUsuarios());
+}
+
+/* ---------- GRUPOS ---------- */
+function abrirModalGrupo(){
+  document.getElementById('modalGrupo').classList.remove('hide');
+  document.getElementById('novoGrupo').value='';
+  setTimeout(()=>{document.getElementById('novoGrupo').focus()},200);
+  lucide.createIcons();
+}
+function fecharModalGrupo(){
+  document.getElementById('modalGrupo').classList.add('hide');
+}
+function salvarGrupo(){
+  const nome = document.getElementById('novoGrupo').value.trim();
+  if(!nome) return;
+  db.collection('grupos').add({nome})
+    .then(()=>{toast('Grupo salvo!');fecharModalGrupo(); prepararEabrirFormUsuario();});
+}
+
+/* ---------- PLAYLISTS ---------- */
+function abrirModalPlaylist(){
+  document.getElementById('modalPlaylist').classList.remove('hide');
+  document.getElementById('novaPlaylist').value='';
+  setTimeout(()=>{document.getElementById('novaPlaylist').focus()},200);
+  lucide.createIcons();
+}
+function fecharModalPlaylist(){
+  document.getElementById('modalPlaylist').classList.add('hide');
+}
+function salvarPlaylist(){
+  const nome = document.getElementById('novaPlaylist').value.trim();
+  if(!nome) return;
+  db.collection('playlists').add({nome})
+    .then(()=>{toast('Playlist salva!');fecharModalPlaylist(); prepararEabrirFormUsuario();});
 }
 
 document.addEventListener('DOMContentLoaded',() => {
