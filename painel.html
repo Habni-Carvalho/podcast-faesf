@@ -9,7 +9,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-
 <!-- Lucide icons -->
 <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -52,7 +51,7 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
 .btn-icon{background:none;border:none;padding:.25rem;border-radius:8px;cursor:pointer;transition:background .1s}
 .btn-icon i{stroke:var(--azul);width:23px;height:23px}
 .btn-icon:hover{background:#f1f5fa}
-.usuario-card{background:#fff;border-radius:18px;padding:16px 20px;margin-bottom:22px;box-shadow:0 2px 6px #001f360e}
+.usuario-card{background:#fff;border-radius:18px;padding:16px 20px;margin-bottom:22px;box-shadow:0 2px 6px #001f360e;position:relative;}
 .usuario-card strong{color:var(--azul)}
 .usuario-card .grupos span{background:#eaf2ff;border:1px solid #c9def9;border-radius:8px;padding:1px 8px;margin-right:5px;font-size:.8rem;color:#19598a}
 .empty{color:#888;text-align:center;margin:2rem 0;font-size:1rem}
@@ -61,10 +60,12 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
 .add-quick-btn:hover { background:#e2eaff; }
 .gp-lista, .pl-lista {display: flex; flex-direction: column; gap: 16px;}
 .gp-item, .pl-item {background: #f8fafc; border-radius: 14px; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between;}
+.gp-desc, .pl-desc {font-size:.93rem;color:#888; margin-top:2px;}
 .gp-actions, .pl-actions {display: flex; gap: 7px;}
 .edit-btn, .delete-btn {background: none; border: none; color: var(--azul); cursor: pointer; border-radius:8px; padding:5px;}
 .edit-btn:hover {background:#e2f3ff;}
 .delete-btn:hover {background:#fff2f2; color:#f23131;}
+.user-filter-bar{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
 @media(max-width:720px){
   .container{padding:1rem 2vw}
   .ep-flex{flex-direction:column;align-items:center}
@@ -118,6 +119,12 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
       <button class="novo-botao" onclick="prepararEabrirFormUsuario()">
         <i data-lucide="user-plus"></i>Novo Usuário
       </button>
+    </div>
+    <div class="user-filter-bar">
+      <label for="filtroGrupo" style="color:var(--azul);font-weight:600">Filtrar por grupo:</label>
+      <select id="filtroGrupo" style="font-size:1rem;padding:7px 16px;border-radius:8px;border:1.3px solid #b9cbe4;">
+        <option value="">Todos</option>
+      </select>
     </div>
     <div id="lista-usuarios"></div>
     <div id="emptyUsu" class="empty" style="display:none">Nenhum usuário cadastrado.</div>
@@ -175,6 +182,7 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
       <h3 id="tituloModalGrupo" style="margin-top:0;font-size:1.15rem;color:var(--azul)">Novo Grupo</h3>
       <form onsubmit="event.preventDefault();salvarGrupoModal();">
         <input id="nomeGrupoModal" placeholder="Nome do grupo" required autofocus>
+        <textarea id="descGrupoModal" placeholder="Descrição do grupo (opcional)" rows="2"></textarea>
         <div style="display:flex;justify-content:flex-end;margin-top:18px;gap:9px">
           <button type="button" class="voltar-home" onclick="fecharModalGrupo()"><i data-lucide='x'></i>Cancelar</button>
           <button class="novo-botao" type="submit"><i data-lucide='save'></i>Salvar</button>
@@ -188,6 +196,7 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
       <h3 id="tituloModalPlaylist" style="margin-top:0;font-size:1.15rem;color:var(--azul)">Nova Playlist</h3>
       <form onsubmit="event.preventDefault();salvarPlaylistModal();">
         <input id="nomePlaylistModal" placeholder="Nome da playlist" required autofocus>
+        <textarea id="descPlaylistModal" placeholder="Descrição da playlist (opcional)" rows="2"></textarea>
         <div style="display:flex;justify-content:flex-end;margin-top:18px;gap:9px">
           <button type="button" class="voltar-home" onclick="fecharModalPlaylist()"><i data-lucide='x'></i>Cancelar</button>
           <button class="novo-botao" type="submit"><i data-lucide='save'></i>Salvar</button>
@@ -211,6 +220,7 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 const ADMINS = ["hpc@faesf.com.br"];
 let editGrupoId = null, editPlaylistId = null;
+let GRUPOS_CACHE = []; // para dropdown de filtro
 function loginGoogle(){
   auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
       .catch(e=>alert("Erro no login: "+e.message));
@@ -231,7 +241,7 @@ function mostrarSecao(qual){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelector('#tab-'+qual).classList.add('active');
   if(qual==='episodios') carregarEpisodios();
-  if(qual==='usuarios')  carregarUsuarios();
+  if(qual==='usuarios')  { carregarGruposDropdown(); carregarUsuarios(); }
   if(qual==='grupos')    carregarGrupos();
   if(qual==='playlists') carregarPlaylists();
 }
@@ -313,7 +323,7 @@ function excluirEpisodio(id){
   if(confirm('Excluir episódio?')) db.collection('episodios').doc(id).delete().then(()=>carregarEpisodios());
 }
 /* ---------- CRUD USUÁRIOS, GRUPOS E PLAYLISTS ---------- */
-let editUserId = null;
+let editUserId = null, usuariosCache = [];
 async function prepararEabrirFormUsuario(user=null){
   const [snapGrup, snapPlay] = await Promise.all([
     db.collection('grupos').get(),
@@ -325,32 +335,66 @@ async function prepararEabrirFormUsuario(user=null){
 }
 function carregarUsuarios(){
   db.collection('usuarios').get().then(snapUsu=>{
-     const box=document.getElementById('lista-usuarios'); box.innerHTML='';
-     if(snapUsu.empty){document.getElementById('emptyUsu').style.display='block';return}
-     document.getElementById('emptyUsu').style.display='none';
+     usuariosCache = [];
      snapUsu.forEach(doc=>{
         const u=doc.data();
-        const card=document.createElement('div');
-        card.className='usuario-card';
-        card.innerHTML=`
-           <strong>${u.nome||'(sem nome)'}</strong> — ${u.cargo||''}<br>
-           <span style="font-size:.82rem;color:#666">${u.email}</span>
-           <div class="grupos" style="margin-top:6px">${(u.grupos||[])
-             .map(g=>`<span>${g}</span>`).join(' ')}</div>
-           <button class="btn-icon" style="position:absolute;top:14px;right:48px"
-                   title="Editar" onclick='prepararEabrirFormUsuario(${JSON.stringify({id:doc.id,...u})})'>
-              <i data-lucide="square-pen"></i>
-           </button>
-           <button class="btn-icon" style="position:absolute;top:14px;right:14px"
-                   title="Excluir" onclick='excluirUsuario("${doc.id}")'>
-              <i data-lucide="trash-2"></i>
-           </button>`;
-        card.style.position='relative';
-        box.appendChild(card);
+        usuariosCache.push({id: doc.id, ...u});
      });
-     lucide.createIcons();
+     renderUsuariosFiltrados();
   });
 }
+function renderUsuariosFiltrados(){
+  const grupoFiltro = document.getElementById('filtroGrupo').value;
+  const box = document.getElementById('lista-usuarios');
+  box.innerHTML = '';
+  let lista = usuariosCache;
+  if(grupoFiltro) {
+    lista = lista.filter(u=> (u.grupos||[]).includes(grupoFiltro));
+  }
+  if(lista.length === 0){
+    document.getElementById('emptyUsu').style.display='block';
+    return;
+  }
+  document.getElementById('emptyUsu').style.display='none';
+  lista.forEach(u=>{
+    const card=document.createElement('div');
+    card.className='usuario-card';
+    card.innerHTML=`
+       <strong>${u.nome||'(sem nome)'}</strong> — ${u.cargo||''}<br>
+       <span style="font-size:.82rem;color:#666">${u.email}</span>
+       <div class="grupos" style="margin-top:6px">${(u.grupos||[])
+         .map(g=>`<span>${g}</span>`).join(' ')}</div>
+       <button class="btn-icon" style="position:absolute;top:14px;right:48px"
+               title="Editar" onclick='prepararEabrirFormUsuario(${JSON.stringify({id:u.id,...u})})'>
+          <i data-lucide="square-pen"></i>
+       </button>
+       <button class="btn-icon" style="position:absolute;top:14px;right:14px"
+               title="Excluir" onclick='excluirUsuario("${u.id}")'>
+          <i data-lucide="trash-2"></i>
+       </button>`;
+    card.style.position='relative';
+    box.appendChild(card);
+  });
+  lucide.createIcons();
+}
+function carregarGruposDropdown(){
+  db.collection('grupos').get().then(snap=>{
+    const sel = document.getElementById('filtroGrupo');
+    sel.innerHTML = '<option value="">Todos</option>';
+    GRUPOS_CACHE = [];
+    snap.forEach(doc=>{
+      const g = doc.data();
+      GRUPOS_CACHE.push(g.nome);
+      const opt = document.createElement('option');
+      opt.value = g.nome;
+      opt.textContent = g.nome + (g.descricao ? ` — ${g.descricao}` : '');
+      sel.appendChild(opt);
+    });
+  });
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('filtroGrupo').addEventListener('change', renderUsuariosFiltrados);
+});
 function abrirFormUsuario(user=null){
   editUserId = user?.id || null;
   document.getElementById('tituloModal').textContent= editUserId?'Editar usuário':'Novo usuário';
@@ -400,9 +444,12 @@ function carregarGrupos(){
       const g=doc.data();
       const div=document.createElement('div');div.className='gp-item';
       div.innerHTML=`
-        <span>${g.nome||'(sem nome)'}</span>
+        <div>
+          <div style="font-weight:600">${g.nome||'(sem nome)'}</div>
+          <div class="gp-desc">${g.descricao||''}</div>
+        </div>
         <div class="gp-actions">
-          <button class="edit-btn" onclick="abrirModalGrupoEdit('${doc.id}','${g.nome||''}')"><i data-lucide='square-pen'></i></button>
+          <button class="edit-btn" onclick="abrirModalGrupoEdit('${doc.id}','${g.nome||''}','${g.descricao||''}')"><i data-lucide='square-pen'></i></button>
           <button class="delete-btn" onclick="excluirGrupo('${doc.id}')"><i data-lucide='trash-2'></i></button>
         </div>
       `;
@@ -415,14 +462,16 @@ function abrirModalGrupoNovo(){
   editGrupoId = null;
   document.getElementById('tituloModalGrupo').textContent = 'Novo Grupo';
   document.getElementById('nomeGrupoModal').value = '';
+  document.getElementById('descGrupoModal').value = '';
   document.getElementById('modalGrupo').classList.remove('hide');
   setTimeout(()=>{document.getElementById('nomeGrupoModal').focus()},200);
   lucide.createIcons();
 }
-function abrirModalGrupoEdit(id,nome){
+function abrirModalGrupoEdit(id,nome,descricao){
   editGrupoId = id;
   document.getElementById('tituloModalGrupo').textContent = 'Editar Grupo';
   document.getElementById('nomeGrupoModal').value = nome||'';
+  document.getElementById('descGrupoModal').value = descricao||'';
   document.getElementById('modalGrupo').classList.remove('hide');
   setTimeout(()=>{document.getElementById('nomeGrupoModal').focus()},200);
   lucide.createIcons();
@@ -432,19 +481,19 @@ function fecharModalGrupo(){
 }
 function salvarGrupoModal(){
   const nome = document.getElementById('nomeGrupoModal').value.trim();
+  const descricao = document.getElementById('descGrupoModal').value.trim();
   if(!nome) return;
   if(editGrupoId){
-    db.collection('grupos').doc(editGrupoId).set({nome})
-      .then(()=>{toast('Grupo atualizado!');fecharModalGrupo();carregarGrupos();});
+    db.collection('grupos').doc(editGrupoId).set({nome, descricao})
+      .then(()=>{toast('Grupo atualizado!');fecharModalGrupo();carregarGrupos();carregarGruposDropdown();});
   } else {
-    db.collection('grupos').add({nome})
-      .then(()=>{toast('Grupo salvo!');fecharModalGrupo();carregarGrupos();});
+    db.collection('grupos').add({nome, descricao})
+      .then(()=>{toast('Grupo salvo!');fecharModalGrupo();carregarGrupos();carregarGruposDropdown();});
   }
-  // Atualizar listas no modal usuário, se aberto
   prepararEabrirFormUsuario();
 }
 function excluirGrupo(id){
-  if(confirm('Excluir este grupo?')) db.collection('grupos').doc(id).delete().then(()=>{toast('Excluído');carregarGrupos();prepararEabrirFormUsuario();});
+  if(confirm('Excluir este grupo?')) db.collection('grupos').doc(id).delete().then(()=>{toast('Excluído');carregarGrupos();carregarGruposDropdown();prepararEabrirFormUsuario();});
 }
 /* ---------- PLAYLISTS - ABA ESPECIAL ---------- */
 function carregarPlaylists(){
@@ -456,9 +505,12 @@ function carregarPlaylists(){
       const p=doc.data();
       const div=document.createElement('div');div.className='pl-item';
       div.innerHTML=`
-        <span>${p.nome||'(sem nome)'}</span>
+        <div>
+          <div style="font-weight:600">${p.nome||'(sem nome)'}</div>
+          <div class="pl-desc">${p.descricao||''}</div>
+        </div>
         <div class="pl-actions">
-          <button class="edit-btn" onclick="abrirModalPlaylistEdit('${doc.id}','${p.nome||''}')"><i data-lucide='square-pen'></i></button>
+          <button class="edit-btn" onclick="abrirModalPlaylistEdit('${doc.id}','${p.nome||''}','${p.descricao||''}')"><i data-lucide='square-pen'></i></button>
           <button class="delete-btn" onclick="excluirPlaylist('${doc.id}')"><i data-lucide='trash-2'></i></button>
         </div>
       `;
@@ -471,14 +523,16 @@ function abrirModalPlaylistNovo(){
   editPlaylistId = null;
   document.getElementById('tituloModalPlaylist').textContent = 'Nova Playlist';
   document.getElementById('nomePlaylistModal').value = '';
+  document.getElementById('descPlaylistModal').value = '';
   document.getElementById('modalPlaylist').classList.remove('hide');
   setTimeout(()=>{document.getElementById('nomePlaylistModal').focus()},200);
   lucide.createIcons();
 }
-function abrirModalPlaylistEdit(id,nome){
+function abrirModalPlaylistEdit(id,nome,descricao){
   editPlaylistId = id;
   document.getElementById('tituloModalPlaylist').textContent = 'Editar Playlist';
   document.getElementById('nomePlaylistModal').value = nome||'';
+  document.getElementById('descPlaylistModal').value = descricao||'';
   document.getElementById('modalPlaylist').classList.remove('hide');
   setTimeout(()=>{document.getElementById('nomePlaylistModal').focus()},200);
   lucide.createIcons();
@@ -488,12 +542,13 @@ function fecharModalPlaylist(){
 }
 function salvarPlaylistModal(){
   const nome = document.getElementById('nomePlaylistModal').value.trim();
+  const descricao = document.getElementById('descPlaylistModal').value.trim();
   if(!nome) return;
   if(editPlaylistId){
-    db.collection('playlists').doc(editPlaylistId).set({nome})
+    db.collection('playlists').doc(editPlaylistId).set({nome, descricao})
       .then(()=>{toast('Playlist atualizada!');fecharModalPlaylist();carregarPlaylists();});
   } else {
-    db.collection('playlists').add({nome})
+    db.collection('playlists').add({nome, descricao})
       .then(()=>{toast('Playlist salva!');fecharModalPlaylist();carregarPlaylists();});
   }
   prepararEabrirFormUsuario();
