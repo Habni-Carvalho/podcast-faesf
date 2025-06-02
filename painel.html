@@ -27,35 +27,36 @@ header svg{stroke:#fff;width:29px;height:29px}
 .voltar-home:hover,.novo-botao:hover{background:var(--azul);color:#fff}
 .voltar-home i,.novo-botao i{stroke:currentColor;width:21px;height:21px}
 .hide { display: none !important; }
-.form-usuario-modal {
+.form-modal {
   background: #fff;
-  border-radius: 18px;
-  padding: 36px 34px 28px 34px;
+  border-radius: 22px;
+  padding: 34px 38px 30px 38px;
   box-shadow: 0 12px 36px #001f3620;
-  max-width:430px; width: 97vw;
-  animation: modalshow .18s;
+  width: 410px; max-width:96vw;
+  animation: modalshow .16s;
   display: flex; flex-direction:column; align-items:center;
+  overflow-y:auto; max-height:98vh;
 }
 @keyframes modalshow {from{transform:scale(.96); opacity:.5;} to{transform:scale(1); opacity:1;}}
-.form-usuario-modal h3 {margin:0 0 13px 0; font-size:1.27rem; color:var(--azul); font-weight:700;}
-.form-usuario-modal form{width:100%;}
-.form-usuario-modal label {display:block; color:var(--azul); font-weight:600; margin:11px 0 5px;}
-.form-usuario-modal input, .form-usuario-modal select {
-  width:100%; border-radius:11px; border:1.4px solid #c9d6e4;
+.form-modal h3 {margin:0 0 16px 0; font-size:1.23rem; color:var(--azul); font-weight:700;}
+.form-modal form{width:100%;}
+.form-modal label {display:block; color:var(--azul); font-weight:600; margin:11px 0 5px;}
+.form-modal input, .form-modal select, .form-modal textarea {
+  width:100%; border-radius:12px; border:1.4px solid #c9d6e4;
   padding:13px 12px; font-size:1.06rem; background: #f7fafd;
-  margin-bottom:10px; transition:border-color .16s, box-shadow .16s;
+  margin-bottom:13px; transition:border-color .16s, box-shadow .16s;
 }
-.form-usuario-modal input:focus, .form-usuario-modal select:focus{
+.form-modal input:focus, .form-modal select:focus, .form-modal textarea:focus{
   outline: none; border-color: var(--input-focus); box-shadow:0 0 0 2px #2564b326;
 }
-.form-usuario-modal .checkboxes-row{display:flex;gap:11px;flex-wrap:wrap;margin:7px 0 12px;}
-.form-usuario-modal .checkbox-item{display:flex;align-items:center;gap:7px;background:#f6f7f9;border-radius:9px;padding:6px 13px;font-size:.97rem;}
-.form-usuario-modal .checkbox-item input[type="checkbox"]{width:18px;height:18px;}
-.form-usuario-modal .modal-btns{display: flex; gap:12px; justify-content: flex-end; width: 100%; margin-top:17px;}
-.form-usuario-modal .novo-botao, .form-usuario-modal .voltar-home{min-width: 112px; justify-content: center;}
+.form-modal .checkboxes-row{display:flex;gap:13px;flex-wrap:wrap;margin:8px 0 13px;}
+.form-modal .checkbox-item{display:flex;align-items:center;gap:8px;background:#f6f7f9;border-radius:10px;padding:8px 16px;font-size:.99rem;}
+.form-modal .checkbox-item input[type="checkbox"]{width:18px;height:18px;}
+.form-modal .modal-btns{display: flex; gap:14px; justify-content: flex-end; width: 100%; margin-top:19px;}
+.form-modal .novo-botao, .form-modal .voltar-home{min-width: 122px; justify-content: center;}
 @media(max-width:720px){
   .container{padding:1rem 2vw}
-  .form-usuario-modal{padding:22px 4vw 20px 4vw;}
+  .form-modal{padding:18px 5vw 15px 5vw;}
 }
 .usuario-card{background:#fff;border-radius:18px;padding:16px 20px;margin-bottom:22px;box-shadow:0 2px 6px #001f360e;position:relative;}
 .usuario-card strong{color:var(--azul)}
@@ -102,26 +103,38 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
     <button class="tab-btn" id="tab-grupos" onclick="mostrarSecao('grupos')"><i data-lucide="users"></i> Grupos</button>
     <button class="tab-btn" id="tab-playlists" onclick="mostrarSecao('playlists')"><i data-lucide="music"></i> Playlists</button>
   </div>
-
-  <!-- Seção Episódios -->
+  <!-- Episódios -->
   <section id="secao-episodios" class="secao">
     <div class="topo-acoes">
-      <button class="novo-botao" onclick="mostrarFormulario()"><i data-lucide="circle-plus"></i>Novo Episódio</button>
+      <button class="novo-botao" onclick="prepararFormEpisodio()"><i data-lucide="circle-plus"></i>Novo Episódio</button>
     </div>
-    <form id="formulario" class="formulario" style="display:none" onsubmit="event.preventDefault();salvarEpisodio();">
-      <input id="titulo" placeholder="Título do episódio" required>
-      <textarea id="descricao" placeholder="Descrição do episódio" required></textarea>
-      <input id="data" type="date" required>
-      <input id="tag" placeholder="Playlists (separadas por vírgula)" required>
-      <input id="imagem" placeholder="Link da imagem (.jpg ou .png)" required>
-      <input id="audio" placeholder="Link do áudio (.mp3)" required>
-      <div class="btn-salvar"><button type="submit"><i data-lucide="save"></i>Salvar</button></div>
-    </form>
+    <div id="modalEpisodio" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.46);display:flex;align-items:center;justify-content:center;z-index:2000">
+      <div class="form-modal">
+        <h3 id="tituloModalEpisodio">Novo Episódio</h3>
+        <form id="formEpisodio" onsubmit="event.preventDefault();salvarEpisodio();" autocomplete="off">
+          <label for="tituloEp">Título</label>
+          <input id="tituloEp" placeholder="Título do episódio" required>
+          <label for="descricaoEp">Descrição</label>
+          <textarea id="descricaoEp" placeholder="Descrição do episódio" rows="2" required></textarea>
+          <label for="dataEp">Data</label>
+          <input id="dataEp" type="date" required>
+          <label>Playlists</label>
+          <div class="checkboxes-row" id="checkPlaylistsEp"></div>
+          <label for="imagemEp">Link da imagem</label>
+          <input id="imagemEp" placeholder="Link da imagem (.jpg ou .png)" required>
+          <label for="audioEp">Link do áudio (.mp3)</label>
+          <input id="audioEp" placeholder="Link do áudio (.mp3)" required>
+          <div class="modal-btns">
+            <button type="button" class="voltar-home" onclick="fecharModalEpisodio()"><i data-lucide='x'></i>Cancelar</button>
+            <button class="novo-botao" type="submit"><i data-lucide='save'></i>Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
     <div id="lista-episodios"></div>
     <div id="emptyEp" class="empty" style="display:none">Nenhum episódio cadastrado.</div>
   </section>
-
-  <!-- Seção Usuários -->
+  <!-- Usuários -->
   <section id="secao-usuarios" class="secao hide">
     <div class="topo-acoes" style="margin-bottom:20px">
       <h3 style="margin:0;color:var(--azul);font-weight:600">Usuários</h3>
@@ -130,30 +143,9 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
     <div id="lista-usuarios"></div>
     <div id="emptyUsu" class="empty" style="display:none">Nenhum usuário cadastrado.</div>
   </section>
-
-  <!-- Seção Grupos -->
-  <section id="secao-grupos" class="secao hide">
-    <div class="topo-acoes">
-      <h3 style="margin:0;color:var(--azul);font-weight:600">Grupos</h3>
-      <button class="novo-botao" onclick="abrirModalGrupoNovo()"><i data-lucide="plus"></i>Novo Grupo</button>
-    </div>
-    <div class="gp-lista" id="lista-grupos"></div>
-    <div class="empty" id="emptyGrupos" style="display:none">Nenhum grupo cadastrado.</div>
-  </section>
-
-  <!-- Seção Playlists -->
-  <section id="secao-playlists" class="secao hide">
-    <div class="topo-acoes">
-      <h3 style="margin:0;color:var(--azul);font-weight:600">Playlists</h3>
-      <button class="novo-botao" onclick="abrirModalPlaylistNovo()"><i data-lucide="plus"></i>Nova Playlist</button>
-    </div>
-    <div class="pl-lista" id="lista-playlists"></div>
-    <div class="empty" id="emptyPlaylists" style="display:none">Nenhuma playlist cadastrada.</div>
-  </section>
-
   <!-- Modal Usuário -->
-  <div id="modalUsuario" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1500">
-    <div class="form-usuario-modal">
+  <div id="modalUsuario" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:2100">
+    <div class="form-modal">
       <h3 id="tituloModal">Novo usuário</h3>
       <form id="formUsuario" onsubmit="event.preventDefault();salvarUsuario();" autocomplete="off">
         <label for="u_nome">Nome completo</label>
@@ -178,29 +170,48 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
       </form>
     </div>
   </div>
-
-  <!-- Modal Grupo Novo/Edita -->
+  <!-- Grupos -->
+  <section id="secao-grupos" class="secao hide">
+    <div class="topo-acoes">
+      <h3 style="margin:0;color:var(--azul);font-weight:600">Grupos</h3>
+      <button class="novo-botao" onclick="abrirModalGrupoNovo()"><i data-lucide="plus"></i>Novo Grupo</button>
+    </div>
+    <div class="gp-lista" id="lista-grupos"></div>
+    <div class="empty" id="emptyGrupos" style="display:none">Nenhum grupo cadastrado.</div>
+  </section>
   <div id="modalGrupo" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1700">
-    <div style="background:#fff;border-radius:15px;padding:26px 20px;width:340px;max-width:96vw;box-shadow:0 6px 22px #001f3614;">
-      <h3 id="tituloModalGrupo" style="margin-top:0;font-size:1.15rem;color:var(--azul)">Novo Grupo</h3>
+    <div class="form-modal">
+      <h3 id="tituloModalGrupo">Novo Grupo</h3>
       <form onsubmit="event.preventDefault();salvarGrupoModal();">
+        <label for="nomeGrupoModal">Nome do grupo</label>
         <input id="nomeGrupoModal" placeholder="Nome do grupo" required autofocus>
+        <label for="descGrupoModal">Descrição</label>
         <textarea id="descGrupoModal" placeholder="Descrição do grupo (opcional)" rows="2"></textarea>
-        <div style="display:flex;justify-content:flex-end;margin-top:18px;gap:9px">
+        <div class="modal-btns">
           <button type="button" class="voltar-home" onclick="fecharModalGrupo()"><i data-lucide='x'></i>Cancelar</button>
           <button class="novo-botao" type="submit"><i data-lucide='save'></i>Salvar</button>
         </div>
       </form>
     </div>
   </div>
-  <!-- Modal Playlist Novo/Edita -->
+  <!-- Playlists -->
+  <section id="secao-playlists" class="secao hide">
+    <div class="topo-acoes">
+      <h3 style="margin:0;color:var(--azul);font-weight:600">Playlists</h3>
+      <button class="novo-botao" onclick="abrirModalPlaylistNovo()"><i data-lucide="plus"></i>Nova Playlist</button>
+    </div>
+    <div class="pl-lista" id="lista-playlists"></div>
+    <div class="empty" id="emptyPlaylists" style="display:none">Nenhuma playlist cadastrada.</div>
+  </section>
   <div id="modalPlaylist" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1700">
-    <div style="background:#fff;border-radius:15px;padding:26px 20px;width:340px;max-width:96vw;box-shadow:0 6px 22px #001f3614;">
-      <h3 id="tituloModalPlaylist" style="margin-top:0;font-size:1.15rem;color:var(--azul)">Nova Playlist</h3>
+    <div class="form-modal">
+      <h3 id="tituloModalPlaylist">Nova Playlist</h3>
       <form onsubmit="event.preventDefault();salvarPlaylistModal();">
+        <label for="nomePlaylistModal">Nome da playlist</label>
         <input id="nomePlaylistModal" placeholder="Nome da playlist" required autofocus>
+        <label for="descPlaylistModal">Descrição</label>
         <textarea id="descPlaylistModal" placeholder="Descrição da playlist (opcional)" rows="2"></textarea>
-        <div style="display:flex;justify-content:flex-end;margin-top:18px;gap:9px">
+        <div class="modal-btns">
           <button type="button" class="voltar-home" onclick="fecharModalPlaylist()"><i data-lucide='x'></i>Cancelar</button>
           <button class="novo-botao" type="submit"><i data-lucide='save'></i>Salvar</button>
         </div>
@@ -221,7 +232,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
-
 /* ---------- AUTENTICAÇÃO GOOGLE + PAPEL ---------- */
 function loginGoogle(){
   auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
@@ -243,9 +253,8 @@ auth.onAuthStateChanged(async user=>{
      document.getElementById('tela-painel').classList.add('hide');
   }
 });
-
 /* ---------- EPISÓDIOS ---------- */
-let todosEp=[], editandoId=null, tagAtual="Todas";
+let todosEp=[], editandoIdEp=null, editandoEpData=null, PLAYLISTS_CADASTRADAS=[];
 function carregarEpisodios(){
   db.collection('episodios').orderBy('criadoEm','desc').get().then(q=>{
     todosEp=[]; q.forEach(d=>todosEp.push({...d.data(),id:d.id}));
@@ -271,7 +280,7 @@ function renderListaEpisodios(){
            <audio controls src="${ep.audio}"></audio>
          </div>
          <div class="icones-laterais">
-           <button class="btn-icon" onclick='mostrarFormulario(${JSON.stringify(ep)}, "${ep.id}")' title="Editar"><i data-lucide="square-pen"></i></button>
+           <button class="btn-icon" onclick='prepararFormEpisodio(${JSON.stringify(ep)}, "${ep.id}")' title="Editar"><i data-lucide="square-pen"></i></button>
            <button class="btn-icon" onclick='excluirEpisodio("${ep.id}")'  title="Excluir"><i data-lucide="trash-2"></i></button>
          </div>
       </div>`;
@@ -279,27 +288,54 @@ function renderListaEpisodios(){
   });
   lucide.createIcons();
 }
-function mostrarFormulario(ep=null,id=null){
-  editandoId=id;
-  const f=document.getElementById('formulario'); f.style.display='block';
-  f.titulo.value=ep?.titulo||''; f.descricao.value=ep?.descricao||'';
-  f.data.value=ep?.data||''; f.tag.value=ep?.tags||'';
-  f.imagem.value=ep?.imagem||''; f.audio.value=ep?.audio||'';
-  f.titulo.focus();
+async function prepararFormEpisodio(ep=null,id=null){
+  editandoIdEp = id;
+  const snapPlay = await db.collection('playlists').get();
+  PLAYLISTS_CADASTRADAS = snapPlay.docs.map(d=>d.data().nome);
+  const boxCheck = document.getElementById('checkPlaylistsEp');
+  boxCheck.innerHTML = '';
+  PLAYLISTS_CADASTRADAS.forEach(pl=>{
+    const idc = "ep-playlist-"+pl.replace(/\s/g,'_');
+    boxCheck.insertAdjacentHTML('beforeend',`
+      <label class="checkbox-item">
+        <input type="checkbox" id="${idc}" data-nome="${pl}">
+        <span>${pl}</span>
+      </label>
+    `);
+  });
+  // Preenche campos se edição
+  document.getElementById('tituloEp').value = ep?.titulo||'';
+  document.getElementById('descricaoEp').value = ep?.descricao||'';
+  document.getElementById('dataEp').value = ep?.data||'';
+  document.getElementById('imagemEp').value = ep?.imagem||'';
+  document.getElementById('audioEp').value = ep?.audio||'';
+  // Seleciona playlists marcadas
+  let marcadas = (ep?.tags||'').split(',').map(s=>s.trim());
+  document.querySelectorAll('#checkPlaylistsEp input[type="checkbox"]').forEach(cb=>{
+    cb.checked = marcadas.includes(cb.getAttribute('data-nome'));
+  });
+  document.getElementById('modalEpisodio').classList.remove('hide');
+  lucide.createIcons();
 }
-function salvarEpisodio(){
-  const f=document.getElementById('formulario');
-  const dados={titulo:f.titulo.value.trim(),descricao:f.descricao.value.trim(),data:f.data.value,
-               tags:f.tag.value.trim(),imagem:f.imagem.value.trim(),audio:f.audio.value.trim(),
-               criadoEm:firebase.firestore.Timestamp.now()};
+function fecharModalEpisodio(){
+  document.getElementById('modalEpisodio').classList.add('hide');
+}
+async function salvarEpisodio(){
+  const titulo = document.getElementById('tituloEp').value.trim();
+  const descricao = document.getElementById('descricaoEp').value.trim();
+  const data = document.getElementById('dataEp').value;
+  const imagem = document.getElementById('imagemEp').value.trim();
+  const audio = document.getElementById('audioEp').value.trim();
+  const playlistsMarcadas = Array.from(document.querySelectorAll('#checkPlaylistsEp input[type="checkbox"]:checked')).map(cb=>cb.getAttribute('data-nome'));
+  const tagsStr = playlistsMarcadas.join(', ');
+  const dados={titulo,descricao,data,tags:tagsStr,imagem,audio,criadoEm:firebase.firestore.Timestamp.now()};
   const ref=db.collection('episodios');
-  (editandoId?ref.doc(editandoId).set(dados):ref.add(dados))
-     .then(()=>{toast('Salvo com sucesso');f.reset();f.style.display='none';carregarEpisodios();editandoId=null});
+  (editandoIdEp?ref.doc(editandoIdEp).set(dados):ref.add(dados))
+     .then(()=>{toast('Salvo com sucesso');document.getElementById('formEpisodio').reset();fecharModalEpisodio();carregarEpisodios();editandoIdEp=null});
 }
 function excluirEpisodio(id){
   if(confirm('Excluir episódio?')) db.collection('episodios').doc(id).delete().then(()=>carregarEpisodios());
 }
-
 /* ---------- USUÁRIOS ---------- */
 let editUserId=null, TODOS_GRUPOS=[], TODOS_PL=[];
 async function prepararEabrirFormUsuario(user=null){
@@ -384,7 +420,6 @@ function salvarUsuario(){
 function excluirUsuario(id){
   if(confirm('Excluir usuário?')) db.collection('usuarios').doc(id).delete().then(()=>carregarUsuarios());
 }
-
 /* ---------- GRUPOS ---------- */
 let editGrupoId = null;
 function carregarGrupos(){
@@ -443,7 +478,6 @@ function salvarGrupoModal(){
       .then(()=>{toast('Grupo salvo!');fecharModalGrupo();carregarGrupos();});
   }
 }
-
 /* ---------- PLAYLISTS ---------- */
 let editPlaylistId = null;
 function carregarPlaylists(){
@@ -502,7 +536,6 @@ function salvarPlaylistModal(){
       .then(()=>{toast('Playlist salva!');fecharModalPlaylist();carregarPlaylists();});
   }
 }
-
 function mostrarSecao(qual){
   document.querySelectorAll('.secao').forEach(s=>s.classList.add('hide'));
   document.querySelector('#secao-'+qual).classList.remove('hide');
