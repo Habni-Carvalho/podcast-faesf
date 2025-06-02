@@ -18,11 +18,15 @@ body{margin:0;font-family:'Inter',Arial,sans-serif;background:var(--cinza);color
 header{background:var(--azul);color:#fff;padding:2.3rem 1rem 2rem;display:flex;align-items:center;justify-content:center;gap:.7rem;font-size:1.5rem;font-weight:700}
 header svg{stroke:#fff;width:29px;height:29px}
 .container{max-width:940px;margin:36px auto 20px;background:var(--card);border-radius:var(--radius);box-shadow:0 6px 28px #0002;padding:34px 28px 30px}
+.painel-topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;}
+.btn-area-usuario{border:1.5px solid var(--azul);color:var(--azul);background:#fff;border-radius:11px;padding:9px 19px;font-weight:600;font-size:1rem;display:flex;align-items:center;gap:7px;cursor:pointer;transition:.13s;}
+.btn-area-usuario:hover{background:#001f36; color:#fff;}
 .tabs{display:flex;gap:10px;margin-bottom:30px}
 .tab-btn{border:none;background:#f5f7f9;border:1.5px solid var(--azul);color:var(--azul);padding:8px 18px;border-radius:40px;display:flex;align-items:center;gap:6px;font-size:1rem;font-weight:600;cursor:pointer;transition:.12s}
 .tab-btn.active{background:var(--azul);color:#fff}
 .tab-btn i{stroke:currentColor;width:19px;height:19px}
 .topo-acoes{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:26px}
+.topo-acoes-right{margin-left:auto;}
 .voltar-home,.novo-botao{border:1.5px solid var(--azul);background:#fff;color:var(--azul);border-radius:10px;display:flex;align-items:center;gap:8px;padding:7px 18px;font-size:1rem;font-weight:600;cursor:pointer;transition:.13s}
 .voltar-home:hover,.novo-botao:hover{background:var(--azul);color:#fff}
 .voltar-home i,.novo-botao i{stroke:currentColor;width:21px;height:21px}
@@ -54,8 +58,10 @@ header svg{stroke:#fff;width:29px;height:29px}
 .form-modal .checkbox-item input[type="checkbox"]{width:18px;height:18px;}
 .form-modal .modal-btns{display: flex; gap:14px; justify-content: flex-end; width: 100%; margin-top:19px;}
 .form-modal .novo-botao, .form-modal .voltar-home{min-width: 122px; justify-content: center;}
+.user-filter-bar{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
 @media(max-width:720px){
   .container{padding:1rem 2vw}
+  .painel-topbar{flex-direction:column;gap:7px;}
   .form-modal{padding:18px 5vw 15px 5vw;}
 }
 .usuario-card{background:#fff;border-radius:18px;padding:16px 20px;margin-bottom:22px;box-shadow:0 2px 6px #001f360e;position:relative;}
@@ -86,17 +92,11 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
 </head>
 <body>
 <header><i data-lucide="headphones"></i> Drops de Conhecimento</header>
-<div class="container" id="tela-login">
-  <div style="text-align:center;padding:70px 0">
-      <h2 style="color:var(--azul);font-weight:500">Acesso restrito</h2>
-      <button class="login-btn" onclick="loginGoogle()">
-        <i data-lucide="log-in"></i> Entrar com Google
-      </button>
-      <div id="msgErro" class="msg-erro" style="display:none"></div>
-      <p style="margin-top:1.7rem;color:#666;opacity:.75;font-size:.94rem">Somente administradores podem acessar este painel.</p>
+<div class="container">
+  <div class="painel-topbar">
+    <div></div>
+    <button class="btn-area-usuario" onclick="window.location.href='index.html'"><i data-lucide="user"></i>Ir para área do usuário</button>
   </div>
-</div>
-<div class="container hide" id="tela-painel">
   <div class="tabs">
     <button class="tab-btn active" id="tab-episodios" onclick="mostrarSecao('episodios')"><i data-lucide="list"></i> Episódios</button>
     <button class="tab-btn" id="tab-usuarios" onclick="mostrarSecao('usuarios')"><i data-lucide="user-plus"></i> Usuários</button>
@@ -106,7 +106,10 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
   <!-- Episódios -->
   <section id="secao-episodios" class="secao">
     <div class="topo-acoes">
-      <button class="novo-botao" onclick="prepararFormEpisodio()"><i data-lucide="circle-plus"></i>Novo Episódio</button>
+      <div style="flex:1"></div>
+      <div class="topo-acoes-right">
+        <button class="novo-botao" onclick="prepararFormEpisodio()"><i data-lucide="circle-plus"></i>Novo Episódio</button>
+      </div>
     </div>
     <div id="modalEpisodio" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.46);display:flex;align-items:center;justify-content:center;z-index:2000">
       <div class="form-modal">
@@ -136,9 +139,15 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
   </section>
   <!-- Usuários -->
   <section id="secao-usuarios" class="secao hide">
-    <div class="topo-acoes" style="margin-bottom:20px">
+    <div class="topo-acoes" style="margin-bottom:18px">
       <h3 style="margin:0;color:var(--azul);font-weight:600">Usuários</h3>
       <button class="novo-botao" onclick="prepararEabrirFormUsuario()"><i data-lucide="user-plus"></i>Novo Usuário</button>
+    </div>
+    <div class="user-filter-bar">
+      <label for="filtroGrupo" style="color:var(--azul);font-weight:600">Filtrar por grupo:</label>
+      <select id="filtroGrupo" style="font-size:1rem;padding:7px 16px;border-radius:8px;border:1.3px solid #b9cbe4;">
+        <option value="">Todos</option>
+      </select>
     </div>
     <div id="lista-usuarios"></div>
     <div id="emptyUsu" class="empty" style="display:none">Nenhum usuário cadastrado.</div>
@@ -232,6 +241,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
+
 /* ---------- AUTENTICAÇÃO GOOGLE + PAPEL ---------- */
 function loginGoogle(){
   auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
@@ -253,8 +263,9 @@ auth.onAuthStateChanged(async user=>{
      document.getElementById('tela-painel').classList.add('hide');
   }
 });
+
 /* ---------- EPISÓDIOS ---------- */
-let todosEp=[], editandoIdEp=null, editandoEpData=null, PLAYLISTS_CADASTRADAS=[];
+let todosEp=[], editandoIdEp=null, PLAYLISTS_CADASTRADAS=[];
 function carregarEpisodios(){
   db.collection('episodios').orderBy('criadoEm','desc').get().then(q=>{
     todosEp=[]; q.forEach(d=>todosEp.push({...d.data(),id:d.id}));
@@ -336,8 +347,8 @@ async function salvarEpisodio(){
 function excluirEpisodio(id){
   if(confirm('Excluir episódio?')) db.collection('episodios').doc(id).delete().then(()=>carregarEpisodios());
 }
-/* ---------- USUÁRIOS ---------- */
-let editUserId=null, TODOS_GRUPOS=[], TODOS_PL=[];
+/* ---------- USUÁRIOS (COM FILTRO POR GRUPO) ---------- */
+let editUserId=null, TODOS_GRUPOS=[], TODOS_PL=[], USUARIOS_CACHE=[];
 async function prepararEabrirFormUsuario(user=null){
   const [snapGrup, snapPlay] = await Promise.all([
     db.collection('grupos').get(),
@@ -349,33 +360,65 @@ async function prepararEabrirFormUsuario(user=null){
 }
 function carregarUsuarios(){
   db.collection('usuarios').get().then(snapUsu=>{
-     const box=document.getElementById('lista-usuarios'); box.innerHTML='';
-     if(snapUsu.empty){document.getElementById('emptyUsu').style.display='block';return}
-     document.getElementById('emptyUsu').style.display='none';
+     USUARIOS_CACHE = [];
      snapUsu.forEach(doc=>{
-        const u=doc.data();
-        const card=document.createElement('div');
-        card.className='usuario-card';
-        card.innerHTML=`
-           <strong>${u.nome||'(sem nome)'}</strong> — ${u.cargo||''}<br>
-           <span style="font-size:.82rem;color:#666">${u.email}</span>
-           <div class="grupos" style="margin-top:6px">${(u.grupos||[])
-             .map(g=>`<span>${g}</span>`).join(' ')}</div>
-           <span style="font-size:.89rem;color:#444">Papel: <b>${u.papel||'usuario'}</b></span>
-           <button class="btn-icon" style="position:absolute;top:14px;right:48px"
-                   title="Editar" onclick='prepararEabrirFormUsuario(${JSON.stringify({id:doc.id,...u})})'>
-              <i data-lucide="square-pen"></i>
-           </button>
-           <button class="btn-icon" style="position:absolute;top:14px;right:14px"
-                   title="Excluir" onclick='excluirUsuario("${doc.id}")'>
-              <i data-lucide="trash-2"></i>
-           </button>`;
-        card.style.position='relative';
-        box.appendChild(card);
+        USUARIOS_CACHE.push({id: doc.id, ...doc.data()});
      });
-     lucide.createIcons();
+     carregarGruposDropdown();
+     renderUsuariosFiltrados();
   });
 }
+function renderUsuariosFiltrados(){
+  const grupoFiltro = document.getElementById('filtroGrupo').value;
+  const box = document.getElementById('lista-usuarios');
+  box.innerHTML = '';
+  let lista = USUARIOS_CACHE;
+  if(grupoFiltro) {
+    lista = lista.filter(u=> (u.grupos||[]).includes(grupoFiltro));
+  }
+  if(lista.length === 0){
+    document.getElementById('emptyUsu').style.display='block';
+    return;
+  }
+  document.getElementById('emptyUsu').style.display='none';
+  lista.forEach(u=>{
+    const card=document.createElement('div');
+    card.className='usuario-card';
+    card.innerHTML=`
+       <strong>${u.nome||'(sem nome)'}</strong> — ${u.cargo||''}<br>
+       <span style="font-size:.82rem;color:#666">${u.email}</span>
+       <div class="grupos" style="margin-top:6px">${(u.grupos||[])
+         .map(g=>`<span>${g}</span>`).join(' ')}</div>
+       <span style="font-size:.89rem;color:#444">Papel: <b>${u.papel||'usuario'}</b></span>
+       <button class="btn-icon" style="position:absolute;top:14px;right:48px"
+               title="Editar" onclick='prepararEabrirFormUsuario(${JSON.stringify(u)})'>
+          <i data-lucide="square-pen"></i>
+       </button>
+       <button class="btn-icon" style="position:absolute;top:14px;right:14px"
+               title="Excluir" onclick='excluirUsuario("${u.id}")'>
+          <i data-lucide="trash-2"></i>
+       </button>`;
+    card.style.position='relative';
+    box.appendChild(card);
+  });
+  lucide.createIcons();
+}
+function carregarGruposDropdown(){
+  db.collection('grupos').get().then(snap=>{
+    const sel = document.getElementById('filtroGrupo');
+    sel.innerHTML = '<option value="">Todos</option>';
+    snap.forEach(doc=>{
+      const g = doc.data();
+      const opt = document.createElement('option');
+      opt.value = g.nome;
+      opt.textContent = g.nome;
+      sel.appendChild(opt);
+    });
+  });
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('filtroGrupo').addEventListener('change', renderUsuariosFiltrados);
+});
 function abrirFormUsuario(user=null){
   editUserId = user?.id || null;
   document.getElementById('tituloModal').textContent= editUserId?'Editar usuário':'Novo usuário';
