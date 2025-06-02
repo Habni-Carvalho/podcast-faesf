@@ -24,6 +24,9 @@
     .login-btn, .logout-btn { border: 1.5px solid #001f36; color: #001f36; border-radius: 10px; background: #fff; font-size: 1rem; padding: 7px 19px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap:7px; transition:.13s;}
     .login-btn:hover, .logout-btn:hover { background: #001f36; color: #fff;}
     .restrito { color: #ad3232; font-weight: 500; margin-top: 25vh; background: #ffeded; padding: 24px 22px; border-radius: 14px; text-align:center;}
+    .funcoes-extras {margin-bottom:22px; display:flex; gap:14px;}
+    .funcoes-extras .novo-botao {border:1.5px solid #001f36; color:#001f36; background:#fff; border-radius:11px; padding:8px 19px; font-weight:600; font-size:1rem; display:flex;align-items:center;gap:7px;cursor:pointer;}
+    .funcoes-extras .novo-botao:hover {background:#001f36; color:#fff;}
     .playlists-bar {display:flex; gap:10px; flex-wrap:wrap; margin-bottom:28px;}
     .playlist-btn { border: 1.2px solid var(--azul); background: #f6f8fa; color:var(--azul); border-radius:18px; font-size:.99rem; padding:7px 22px; font-weight:600; cursor:pointer; box-shadow: 0 1px 3px #001f3622; transition:.13s;}
     .playlist-btn.active, .playlist-btn:hover { background:var(--azul); color:#fff;}
@@ -67,6 +70,7 @@
 </header>
 <div class="container">
   <div class="user-bar" id="userBar"></div>
+  <div class="funcoes-extras" id="funcoesExtras"></div>
   <div id="restritoMsg" class="restrito" style="display:none">
     <div style="font-size:1.1rem">Acesso restrito.</div>
     <div style="font-size:.97rem;margin-top:5px;">Faça login com sua conta cadastrada.<br>Se o problema persistir, procure o administrador.</div>
@@ -92,11 +96,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
-let usuario, usuarioDoc, playlistsUsuario=[], playlistAtual="Todas";
+let usuario, usuarioDoc, papelUsuario="usuario", playlistsUsuario=[], playlistAtual="Todas";
 const userBar = document.getElementById('userBar');
 const areaPrincipal = document.getElementById('areaPrincipal');
 const restritoMsg = document.getElementById('restritoMsg');
-
 function atualizarBarraUsuario(user){
   userBar.innerHTML = '';
   if(user){
@@ -132,27 +135,47 @@ auth.onAuthStateChanged(async user=>{
   atualizarBarraUsuario(user);
   areaPrincipal.style.display = 'none';
   restritoMsg.style.display = 'block';
+  papelUsuario = "usuario";
   if(user){
-    // Checa se o e-mail está na coleção usuarios
+    // Busca usuário no Firestore
     const snap = await db.collection('usuarios').where('email','==',user.email).get();
     if(!snap.empty){
       usuario = user;
       usuarioDoc = snap.docs[0].data();
+      papelUsuario = usuarioDoc.papel || "usuario";  // <-- recupere o campo papel
       playlistsUsuario = usuarioDoc.playlists||[];
       restritoMsg.style.display = 'none';
       areaPrincipal.style.display = 'block';
       playlistAtual = "Todas";
       await carregarPlaylistsUsuario();
       await carregarEpisodiosUsuario();
+      mostrarFuncoesExtras();
     } else {
       areaPrincipal.style.display = 'none';
       restritoMsg.style.display = 'block';
+      mostrarFuncoesExtras();
     }
   } else {
     areaPrincipal.style.display = 'none';
     restritoMsg.style.display = 'block';
+    mostrarFuncoesExtras();
   }
 });
+function mostrarFuncoesExtras() {
+  const extras = document.getElementById('funcoesExtras');
+  extras.innerHTML = "";
+  if(papelUsuario==="admin"){
+    // Exemplo de botão Painel Administrativo (link para painel.html)
+    const btn = document.createElement('button');
+    btn.className = 'novo-botao';
+    btn.innerHTML = `<i data-lucide="settings"></i>Painel Administrativo`;
+    btn.onclick = ()=> window.location.href="painel.html";
+    extras.appendChild(btn);
+
+    // Pode adicionar outros recursos para admin aqui!
+  }
+  lucide.createIcons();
+}
 async function carregarPlaylistsUsuario(){
   const bar = document.getElementById('playlistBar');
   bar.innerHTML = '';
@@ -250,9 +273,15 @@ async function renderComentarios(epId){
       <div class="comment-item">
         <span class="com-nome">${c.nome||'Anônimo'}:</span>
         <span class="com-txt">${c.texto||''}</span>
+        ${
+          papelUsuario==="admin"
+            ? `<button style="background:none;border:none;color:#c00;font-size:1.02em;cursor:pointer;margin-left:8px" onclick="excluirComentario('${epId}','${doc.id}')"><i data-lucide='trash-2' style="width:18px;height:18px;"></i></button>`
+            : ''
+        }
       </div>
     `);
   });
+  lucide.createIcons();
 }
 window.enviarComentario = async function(epId){
   const inp = document.getElementById('comment-input-'+epId);
@@ -263,6 +292,12 @@ window.enviarComentario = async function(epId){
   });
   inp.value='';
   renderComentarios(epId);
+}
+window.excluirComentario = async function(epId, commentId){
+  if(confirm("Excluir este comentário?")){
+    await db.collection('episodios').doc(epId).collection('comentarios').doc(commentId).delete();
+    renderComentarios(epId);
+  }
 }
 </script>
 <script>lucide.createIcons();</script>
