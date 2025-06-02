@@ -5,19 +5,20 @@
 <title>Painel | Podcast FAESF</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- Firebase SDK (v9 compat) -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-<!-- Lucide icons -->
 <script src="https://unpkg.com/lucide@latest"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
 :root{
   --azul:#001f36; --cinza:#ebedf0; --card:#fff; --radius:32px;
+  --input-focus: #2564b3;
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:"Segoe UI",Arial,sans-serif;background:var(--cinza);color:#232528;min-height:100vh}
+body{margin:0;font-family:'Inter',Arial,sans-serif;background:var(--cinza);color:#232528;min-height:100vh}
 header{background:var(--azul);color:#fff;padding:2.3rem 1rem 2rem;display:flex;align-items:center;justify-content:center;gap:.7rem;font-size:1.5rem;font-weight:700}
 header svg{stroke:#fff;width:29px;height:29px}
 .container{max-width:940px;margin:36px auto 20px;background:var(--card);border-radius:var(--radius);box-shadow:0 6px 28px #0002;padding:34px 28px 30px}
@@ -33,7 +34,11 @@ header svg{stroke:#fff;width:29px;height:29px}
 .tag-btn{border:1.3px solid var(--azul);background:#f6f7f9;color:var(--azul);padding:.38rem 1.3rem;border-radius:17px;font-size:.96rem;font-weight:500;cursor:pointer;transition:.1s}
 .tag-btn.active,.tag-btn:hover{background:var(--azul);color:#fff}
 .formulario{background:#f9fafb;border-radius:20px;padding:23px 18px 28px;margin-bottom:28px}
-.formulario input,.formulario textarea{width:100%;font-size:15px;border:1px solid #d1d5db;border-radius:11px;padding:12px;margin-bottom:14px}
+.formulario input,.formulario textarea, .formulario select{width:100%;font-size:15px;border:1px solid #d1d5db;border-radius:11px;padding:12px;margin-bottom:14px;transition:border-color .13s, box-shadow .13s;}
+.formulario input:focus, .formulario textarea:focus, .formulario select:focus{outline:none;border-color:var(--input-focus);box-shadow:0 0 0 2px #2564b33a;}
+.formulario .checkbox-list{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0 12px;}
+.formulario .checkbox-item{display:flex;align-items:center;gap:7px;background:#f6f7f9;border-radius:9px;padding:6px 13px;font-size:.98rem;font-weight:500;}
+.formulario .checkbox-item input[type="checkbox"]{width:18px;height:18px;}
 .formulario .btn-salvar{display:flex;justify-content:flex-end}
 .formulario .btn-salvar button{border:1.5px solid var(--azul);background:#fff;color:var(--azul);border-radius:12px;padding:9px 22px;display:flex;align-items:center;gap:7px;font-size:1rem;font-weight:600;cursor:pointer;transition:.13s}
 .formulario .btn-salvar button:hover{background:var(--azul);color:#fff}
@@ -66,11 +71,34 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
 .edit-btn:hover {background:#e2f3ff;}
 .delete-btn:hover {background:#fff2f2; color:#f23131;}
 .user-filter-bar{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+/* MODAIS NOVOS GRUPO E PLAYLIST */
+#modalGrupo .modalbox, #modalPlaylist .modalbox {
+  background: #fff; border-radius: 16px; padding: 38px 34px 28px 34px; box-shadow:0 12px 36px #001f3620; width: 390px; max-width:96vw; display: flex; flex-direction: column; align-items:center;
+  animation: modalshow .22s;
+}
+@keyframes modalshow {from{transform:scale(.92); opacity:.4;} to{transform:scale(1); opacity:1;}}
+#modalGrupo input, #modalPlaylist input,
+#modalGrupo textarea, #modalPlaylist textarea {
+  width: 100%; margin-bottom: 18px; border-radius: 11px; border: 1.4px solid #c9d6e4; padding: 13px 12px; font-size:1.08rem; background: #f7fafd; transition:border-color .16s, box-shadow .16s;
+}
+#modalGrupo input:focus, #modalPlaylist input:focus,
+#modalGrupo textarea:focus, #modalPlaylist textarea:focus {
+  outline: none; border-color: var(--input-focus); box-shadow:0 0 0 2px #2564b326;
+}
+#modalGrupo h3, #modalPlaylist h3 { margin:0 0 13px 0; font-size:1.27rem; color:var(--azul); font-weight:700; letter-spacing:.01em;}
+#modalGrupo .modal-btns, #modalPlaylist .modal-btns {
+  display: flex; gap:12px; justify-content: flex-end; width: 100%; margin-top:10px;
+}
+#modalGrupo .novo-botao, #modalPlaylist .novo-botao,
+#modalGrupo .voltar-home, #modalPlaylist .voltar-home{
+  min-width: 112px; justify-content: center;
+}
 @media(max-width:720px){
   .container{padding:1rem 2vw}
   .ep-flex{flex-direction:column;align-items:center}
   .ep-img{width:100%;height:auto;max-width:280px}
   .icones-laterais{flex-direction:row;margin:10px 0 0;gap:20px}
+  #modalGrupo .modalbox, #modalPlaylist .modalbox { padding: 28px 6vw 24px 6vw;}
 }
 </style>
 </head>
@@ -104,7 +132,10 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
       <input id="titulo" placeholder="Título do episódio" required>
       <textarea id="descricao" placeholder="Descrição do episódio" required></textarea>
       <input id="data" type="date" required>
-      <input id="tag" placeholder="Tags (ex: Notícias, EaD)" required>
+      <div>
+        <label style="font-weight:600; color:var(--azul);margin-bottom:6px;display:block;">Selecione a(s) playlist(s):</label>
+        <div class="checkbox-list" id="playlistCheckboxList"></div>
+      </div>
       <input id="imagem" placeholder="Link da imagem (.jpg ou .png)" required>
       <input id="audio" placeholder="Link do áudio (.mp3)" required>
       <div class="btn-salvar"><button type="submit"><i data-lucide="save"></i>Salvar</button></div>
@@ -178,12 +209,12 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
   </div>
   <!-- Modal Grupo Novo/Edita -->
   <div id="modalGrupo" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1700">
-    <div style="background:#fff;border-radius:15px;padding:26px 20px;width:340px;max-width:96vw;box-shadow:0 6px 22px #001f3614;">
-      <h3 id="tituloModalGrupo" style="margin-top:0;font-size:1.15rem;color:var(--azul)">Novo Grupo</h3>
+    <div class="modalbox">
+      <h3 id="tituloModalGrupo">Novo Grupo</h3>
       <form onsubmit="event.preventDefault();salvarGrupoModal();">
         <input id="nomeGrupoModal" placeholder="Nome do grupo" required autofocus>
         <textarea id="descGrupoModal" placeholder="Descrição do grupo (opcional)" rows="2"></textarea>
-        <div style="display:flex;justify-content:flex-end;margin-top:18px;gap:9px">
+        <div class="modal-btns">
           <button type="button" class="voltar-home" onclick="fecharModalGrupo()"><i data-lucide='x'></i>Cancelar</button>
           <button class="novo-botao" type="submit"><i data-lucide='save'></i>Salvar</button>
         </div>
@@ -192,12 +223,12 @@ audio{width:100%;border-radius:18px;background:#f3f5f7}
   </div>
   <!-- Modal Playlist Novo/Edita -->
   <div id="modalPlaylist" class="hide" style="position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1700">
-    <div style="background:#fff;border-radius:15px;padding:26px 20px;width:340px;max-width:96vw;box-shadow:0 6px 22px #001f3614;">
-      <h3 id="tituloModalPlaylist" style="margin-top:0;font-size:1.15rem;color:var(--azul)">Nova Playlist</h3>
+    <div class="modalbox">
+      <h3 id="tituloModalPlaylist">Nova Playlist</h3>
       <form onsubmit="event.preventDefault();salvarPlaylistModal();">
         <input id="nomePlaylistModal" placeholder="Nome da playlist" required autofocus>
         <textarea id="descPlaylistModal" placeholder="Descrição da playlist (opcional)" rows="2"></textarea>
-        <div style="display:flex;justify-content:flex-end;margin-top:18px;gap:9px">
+        <div class="modal-btns">
           <button type="button" class="voltar-home" onclick="fecharModalPlaylist()"><i data-lucide='x'></i>Cancelar</button>
           <button class="novo-botao" type="submit"><i data-lucide='save'></i>Salvar</button>
         </div>
@@ -220,7 +251,7 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 const ADMINS = ["hpc@faesf.com.br"];
 let editGrupoId = null, editPlaylistId = null;
-let GRUPOS_CACHE = []; // para dropdown de filtro
+let GRUPOS_CACHE = [];
 function loginGoogle(){
   auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
       .catch(e=>alert("Erro no login: "+e.message));
@@ -252,7 +283,21 @@ function toast(msg){
 }
 /* ---------- CRUD EPISÓDIOS ---------- */
 let todos=[], editandoId=null, tagAtual="Todas";
-function carregarEpisodios(){
+async function carregarEpisodios(){
+  // Carrega playlists para o formulário de episódio
+  const snapPlay = await db.collection('playlists').get();
+  const boxCheck = document.getElementById('playlistCheckboxList');
+  boxCheck.innerHTML = '';
+  snapPlay.forEach(doc=>{
+    const p = doc.data();
+    const id = `ep-playlist-${doc.id}`;
+    boxCheck.insertAdjacentHTML('beforeend',`
+      <label class="checkbox-item">
+        <input type="checkbox" id="${id}" data-nome="${p.nome}">
+        <span>${p.nome}</span>
+      </label>
+    `);
+  });
   db.collection('episodios').orderBy('criadoEm','desc').get().then(q=>{
     todos=[]; q.forEach(d=>todos.push({...d.data(),id:d.id}));
     renderTags(); renderLista();
@@ -297,14 +342,22 @@ async function mostrarFormulario(ep=null,id=null){
   editandoId=id;
   const f=document.getElementById('formulario'); f.style.display='block';
   f.titulo.value=ep?.titulo||''; f.descricao.value=ep?.descricao||'';
-  f.data.value=ep?.data||''; f.tag.value=ep?.tags||'';
+  f.data.value=ep?.data||'';
   f.imagem.value=ep?.imagem||''; f.audio.value=ep?.audio||'';
+  // Preenche playlists marcadas
+  const checked = (ep?.tags||'').split(',').map(t=>t.trim());
+  document.querySelectorAll('#playlistCheckboxList input[type="checkbox"]').forEach(c=>{
+    c.checked = checked.includes(c.getAttribute('data-nome'));
+  });
   f.titulo.focus();
 }
 async function salvarEpisodio(){
   const f=document.getElementById('formulario');
-  let tagsPlaylist = (f.tag.value.trim() || '').split(',').map(t=>t.trim()).filter(Boolean);
-  for (const nome of tagsPlaylist) {
+  // Coleta playlists marcadas
+  const checkboxes = document.querySelectorAll('#playlistCheckboxList input[type="checkbox"]:checked');
+  const playlistsMarcadas = Array.from(checkboxes).map(cb=>cb.getAttribute('data-nome'));
+  const tagsStr = playlistsMarcadas.join(', ');
+  for (const nome of playlistsMarcadas) {
     if (nome) {
       let snap = await db.collection('playlists').where('nome', '==', nome).get();
       if (snap.empty) {
@@ -312,9 +365,15 @@ async function salvarEpisodio(){
       }
     }
   }
-  const dados={titulo:f.titulo.value.trim(),descricao:f.descricao.value.trim(),data:f.data.value,
-               tags:f.tag.value.trim(),imagem:f.imagem.value.trim(),audio:f.audio.value.trim(),
-               criadoEm:firebase.firestore.Timestamp.now()};
+  const dados={
+    titulo:f.titulo.value.trim(),
+    descricao:f.descricao.value.trim(),
+    data:f.data.value,
+    tags:tagsStr,
+    imagem:f.imagem.value.trim(),
+    audio:f.audio.value.trim(),
+    criadoEm:firebase.firestore.Timestamp.now()
+  };
   const ref=db.collection('episodios');
   (editandoId?ref.doc(editandoId).set(dados):ref.add(dados))
      .then(()=>{toast('Salvo com sucesso');f.reset();f.style.display='none';carregarEpisodios();editandoId=null});
@@ -387,7 +446,7 @@ function carregarGruposDropdown(){
       GRUPOS_CACHE.push(g.nome);
       const opt = document.createElement('option');
       opt.value = g.nome;
-      opt.textContent = g.nome + (g.descricao ? ` — ${g.descricao}` : '');
+      opt.textContent = g.nome; // agora só nome, sem descrição!
       sel.appendChild(opt);
     });
   });
@@ -411,7 +470,7 @@ function gerarChecks(destId,todas,marcadas){
   todas.forEach(nome=>{
     const id=destId+nome;
     box.insertAdjacentHTML('beforeend',`
-      <label style="display:flex;align-items:center;gap:6px;font-size:.9rem">
+      <label style="display:flex;align-items:center;gap:6px;font-size:.97rem">
         <input type="checkbox" id="${id}" ${marcadas && marcadas.includes(nome)?'checked':''}>
         <span>${nome}</span>
       </label>`);
