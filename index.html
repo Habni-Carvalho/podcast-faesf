@@ -27,6 +27,11 @@
     .funcoes-extras {margin-bottom:22px; display:flex; gap:14px;}
     .funcoes-extras .novo-botao {border:1.5px solid #001f36; color:#001f36; background:#fff; border-radius:11px; padding:8px 19px; font-weight:600; font-size:1rem; display:flex;align-items:center;gap:7px;cursor:pointer;}
     .funcoes-extras .novo-botao:hover {background:#001f36; color:#fff;}
+    .suggest-bar{margin:18px 0 20px 0;display:flex;flex-direction:column;align-items:flex-start;}
+    .suggest-bar form{display:flex;gap:8px;width:100%;}
+    .suggest-bar input{flex:1;padding:10px 13px;font-size:1rem;border:1.3px solid #c8d9eb;border-radius:10px;}
+    .suggest-bar button{background:var(--azul);color:#fff;border:none;padding:9px 19px;border-radius:10px;font-weight:600;display:flex;align-items:center;gap:7px;cursor:pointer;font-size:1rem;}
+    .suggest-bar button:hover{background:#14528a;}
     .playlists-bar {display:flex; gap:10px; flex-wrap:wrap; margin-bottom:28px;}
     .playlist-btn { border: 1.2px solid var(--azul); background: #f6f8fa; color:var(--azul); border-radius:18px; font-size:.99rem; padding:7px 22px; font-weight:600; cursor:pointer; box-shadow: 0 1px 3px #001f3622; transition:.13s;}
     .playlist-btn.active, .playlist-btn:hover { background:var(--azul); color:#fff;}
@@ -76,6 +81,14 @@
     <div style="font-size:.97rem;margin-top:5px;">Faça login com sua conta cadastrada.<br>Se o problema persistir, procure o administrador.</div>
   </div>
   <div id="areaPrincipal" style="display:none">
+    <!-- SUGESTÃO DE TEMAS -->
+    <div class="suggest-bar">
+      <form id="formSugestao" autocomplete="off" onsubmit="event.preventDefault(); enviarSugestao();">
+        <input id="inputSugestao" maxlength="140" placeholder="Sugira um tema para novos episódios..." required>
+        <button type="submit"><i data-lucide="sparkles"></i> Sugerir</button>
+      </form>
+      <div id="msgSugestao" style="margin-top:8px;color:#248655;font-size:.97rem;"></div>
+    </div>
     <div class="playlists-bar" id="playlistBar"></div>
     <div id="listaEpisodios"></div>
     <div class="empty-state" id="emptyMsg" style="display:none">
@@ -171,10 +184,25 @@ function mostrarFuncoesExtras() {
     btn.innerHTML = `<i data-lucide="settings"></i>Painel Administrativo`;
     btn.onclick = ()=> window.location.href="painel.html";
     extras.appendChild(btn);
-
-    // Pode adicionar outros recursos para admin aqui!
   }
   lucide.createIcons();
+}
+// ---- Sugestão de temas
+function enviarSugestao(){
+  const inp = document.getElementById('inputSugestao');
+  const msg = document.getElementById('msgSugestao');
+  const texto = (inp.value||'').trim();
+  if(!texto || !usuario) return;
+  db.collection('sugestoes').add({
+    usuario: usuario.displayName||usuario.email,
+    email: usuario.email,
+    sugestao: texto,
+    data: new Date()
+  }).then(()=>{
+    msg.textContent = "Sugestão enviada! Obrigado 😊";
+    inp.value = "";
+    setTimeout(()=>{msg.textContent="";},3500);
+  });
 }
 async function carregarPlaylistsUsuario(){
   const bar = document.getElementById('playlistBar');
