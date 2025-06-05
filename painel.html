@@ -468,9 +468,9 @@ function salvarUsuario(){
   const pls   =Array.from(document.querySelectorAll('#checkPlaylists input:checked')).map(c=>c.nextElementSibling.textContent);
   const papel = document.getElementById('u_papel').value;
   const u={
-    nome: u_nome.value.trim(),
-    email: u_email.value.trim(),
-    cargo: u_cargo.value.trim(),
+    nome: document.getElementById('u_nome').value.trim(),
+    email: document.getElementById('u_email').value.trim(),
+    cargo: document.getElementById('u_cargo').value.trim(),
     grupos, playlists:pls,
     papel
   };
